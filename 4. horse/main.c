@@ -1,108 +1,24 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include <assert.h>
+#include <stdlib.h>
+#include <Windows.h>
+#include <stdio.h>
 #include "console.h"
-
-#define TITLE_X 3
-#define TITLE_Y 1
-
-#define FIELD_PADDING 3
-
-#define CHAR_BORDER '#'
-#define CHAR_FIELD  ' '
-#define CHAR_POINT  '@'
 
 #define COLOR_BORDER 1
 #define COLOR_FIELD  2
 #define COLOR_POINT  3
 
-static int field_x, field_y; // top-left corner
-static int field_width, field_height;
-static int point_x, point_y;
-
-/* Output char using given color pair at given position. */
-static void con_charAt(int ch, int color, int x, int y) {
-	con_gotoXY(x, y);
-	con_setColor(color);
-	con_outTxt("%c", ch);
-}
-
 static void init_colors() {
-	con_initPair(COLOR_BORDER, CON_COLOR_BLACK, CON_COLOR_BLUE);
+/*	con_initPair(COLOR_BORDER, CON_COLOR_BLACK, CON_COLOR_BLUE);
 	con_initPair(COLOR_FIELD, CON_COLOR_GREEN, CON_COLOR_GREEN);
-	con_initPair(COLOR_POINT, CON_COLOR_RED, CON_COLOR_GREEN);
+	con_initPair(COLOR_POINT, CON_COLOR_RED, CON_COLOR_GREEN);*/
 }
 
-static void initial_draw() {
-	con_clearScr();
-	con_gotoXY(TITLE_X, TITLE_Y);
-	con_outTxt("Use arrows to move point, use Esc to exit.");
-
-	{
-		int i, j;
-		for (i = 0; i < field_width; ++i) {
-			for (j = 0; j < field_height; ++j) {
-				int ch;
-				int color;
-				if (i == 0 || i == field_width - 1 || j == 0 || j == field_height - 1) {
-					ch = CHAR_BORDER;
-					color = COLOR_BORDER;
-				}
-				else {
-					ch = CHAR_FIELD;
-					color = COLOR_FIELD;
-				}
-				con_charAt(ch, color, field_x + i, field_y + j);
-			}
-		}
-	}
-
-	point_x = field_x + field_width / 2;
-	point_y = field_y + field_height / 2;
-	con_charAt(CHAR_POINT, COLOR_POINT, point_x, point_y);
-}
-
-/* Returns 1 if quit. */
-int process_key(int key) {
-	// position change
-	int dx = 0;
-	int dy = 0;
-
-	switch (key) {
-	case CON_KEY_ESCAPE:
-		return 1;
-
-	case CON_KEY_UP:
-		if (point_y - 1 > field_y) {
-			dy = -1;
-		}
-		break;
-
-	case CON_KEY_DOWN:
-		if (point_y + 1 < field_y + field_height - 1) {
-			dy = 1;
-		}
-		break;
-
-	case CON_KEY_LEFT:
-		if (point_x - 1 > field_x) {
-			dx = -1;
-		}
-		break;
-
-	case CON_KEY_RIGHT:
-		if (point_x + 1 < field_x + field_width - 1) {
-			dx = 1;
-		}
-		break;
-	}
-
-	if (dx != 0 || dy != 0) {
-		con_charAt(CHAR_FIELD, COLOR_FIELD, point_x, point_y);
-		point_x += dx;
-		point_y += dy;
-		con_charAt(CHAR_POINT, COLOR_POINT, point_x, point_y);
-	}
-	return 0;
-}
+typedef struct _point{
+	int x;
+	int y;
+} point;
 
 char check_point(int x, int y){
 	if ((x > 7) || (y > 7) || (x < 0) || (y < 0))
@@ -110,25 +26,51 @@ char check_point(int x, int y){
 	return 1;
 }
 
-char solve(int x, int y, char *map, int *empty){
+int get_empty(int x, int y, int *map){
+	int result = 0;
+	if (!check_point(x + 2, y + 1))
+		if (!check_point(x + 1, y + 2, map, empty, result))
+			if (!check_point(x + 2, y - 1, map, empty, result))
+				if (!check_point(x + 1, y - 2, map, empty, result))
+					if (!check_point(x - 2, y + 1, map, empty, result))
+						if (!check_point(x - 1, y + 2, map, empty, result))
+							if (!check_point(x - 2, y - 1, map, empty, result))
+								if (!check_point(x - 1, y - 2, map, empty, result))
+}
+
+char solve(int x, int y, char *map, int *empty, point **result){
 	if (!check_point(x, y))
 		return 0;
 	if (map[8 * x + y])
 		return 0;
 	map[8 * x + y] = 1;
-	*empty--;
+	(*empty)--;
 	if (*empty != 0){
-		if (!solve(x + 2, y + 1, map))
-		if (!solve(x + 1, y + 2, map))
-		if (!solve(x + 2, y - 1, map))
-		if (!solve(x + 1, y - 2, map))
-		if (!solve(x - 2, y + 1, map))
-		if (!solve(x - 1, y + 2, map))
-		if (!solve(x - 2, y - 1, map))
-		if (!solve(x - 1, y - 2, map))
+		if (!solve(x + 2, y + 1, map, empty, result))
+			if (!solve(x + 1, y + 2, map, empty, result))
+				if (!solve(x + 2, y - 1, map, empty, result))
+					if (!solve(x + 1, y - 2, map, empty, result))
+						if (!solve(x - 2, y + 1, map, empty, result))
+							if (!solve(x - 1, y + 2, map, empty, result))
+								if (!solve(x - 2, y - 1, map, empty, result))
+									if (!solve(x - 1, y - 2, map, empty, result))
+									{
+										(*empty)++;
+										map[8 * x + y] = 0;
+										return 0;
+									}
+	}
+	else{
+		*result = (point *)calloc(8 * 8, sizeof(point));
+		if (*result == NULL)
 			return 0;
 	}
 
+	if (*result != NULL){
+		point p = { x, y };
+		(*result)[(*empty)] = p;
+	}
+	(*empty)++;
 	map[8 * x + y] = 0;
 	return 1;
 }
@@ -137,42 +79,65 @@ void horse(int x, int y){
 	if (!check_point(x - 1, y - 1))
 		return;
 	char *map = (char *)calloc(8 * 8, sizeof(char));
+	if (map == NULL)
+		return;
+	point *result = NULL;
 	int empty = 8 * 8;
-	solve(x - 1, y - 1, map, &empty);
-
+	solve(x - 1, y - 1, map, &empty, &result);
 	free(map);
+	if (result == NULL){
+		con_gotoXY(0, 0);
+		con_outTxt("Cant solve =(\n");
+		return;
+	}
+	for (int i = 8 * 8-1; i >= 0; i++){
+		con_gotoXY(result[i].x, result[i].y);
+		con_outTxt("@");
+		Sleep(500); 
+		con_gotoXY(result[i].x, result[i].y);
+		con_outTxt(" ");
+	}
+	free(result);
+}
+
+void skip_garbage() {
+	int ch;
+	do {
+		ch = getchar();
+	} while (ch != '\n');
+}
+
+int read_int(const char * request) {
+	for (;;) {
+		printf("%s", request);
+		int num;
+		int res = scanf("%d", &num);
+		skip_garbage();
+		if (res == 1) {
+			return num;
+		}
+	}
 }
 
 int main() {
-	int quit = 0;
-	int max_x, max_y;
+	int x = 0; 
+	int y = 0; 
 
-	con_init();
-	con_hideCursor();
-
-	init_colors();
-
-	// calculate size of field
-	con_getMaxXY(&max_x, &max_y);
-	field_x = FIELD_PADDING + TITLE_Y + 1;
-	field_y = FIELD_PADDING;
-	field_width = max_x - field_x - FIELD_PADDING;
-	field_height = max_y - field_y - FIELD_PADDING;
-	assert(field_width > 2);
-	assert(field_height > 2);
-
-	initial_draw();
-
-	while (!quit) {
-		if (con_keyPressed()) {
-			if (process_key(con_getKey())) {
-				quit = 1;
-			}
-		}
+	while (!check_point(x - 1, 1)){
+		x = read_int("Horse x [1-8]: ");
+	}
+	while (!check_point(1, y - 1)){
+		y = read_int("Horse y [1-8]: ");
 	}
 
+	
+	con_init();
+	con_hideCursor();
 	con_clearScr();
+	init_colors();
+
+	horse(x, y);
+
 	con_deinit();
 	return 0;
 }
-
