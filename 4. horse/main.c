@@ -10,7 +10,7 @@
 #define COLOR_POINT  3
 
 
-#define MAP_SIZE 7
+#define MAP_SIZE 8
 
 static void init_colors() {
 	/*	con_initPair(COLOR_BORDER, CON_COLOR_BLACK, CON_COLOR_BLUE);
@@ -35,12 +35,14 @@ char solve(int x, int y, char *map, int *empty, point **result){
 	map[MAP_SIZE * x + y] = 1;
 	char success = 0;
 	(*empty)--;
+
 	if (*empty != 0){
-		for (int i = 0; i<sizeof(moves); i++){
+		for (int i = 0; i<sizeof(moves)/sizeof(point); i++){
 			if ((x + moves[i].x > MAP_SIZE - 1) || (y + moves[i].y > MAP_SIZE-1) || (x + moves[i].x < 0) || (y + moves[i].y < 0))
 				continue;
 			if (map[MAP_SIZE * (x + moves[i].x) + y + moves[i].y])
 				continue;
+
 			if (solve(x + moves[i].x, y + moves[i].y, map, empty, result)){
 				success = 1;
 				break;
@@ -54,8 +56,8 @@ char solve(int x, int y, char *map, int *empty, point **result){
 	}
 
 	if (*result != NULL){
-		point p = { x, y };
-		(*result)[(*empty)] = p;
+		(*result)[(*empty)].x = x;
+		(*result)[(*empty)].y = y;
 		success = 1;
 	}
 
@@ -82,12 +84,13 @@ void horse(int x, int y){
 	}
 
 	printf("SOLVED!\n");
-	return;
-	for (int i = MAP_SIZE * MAP_SIZE - 1; i >= 0; i++){
+
+	for (int i = MAP_SIZE * MAP_SIZE - 1; i >= 0; i--){
 		//con_gotoXY(result[i].x, result[i].y);
 		//con_outTxt("@");
 		//Sleep(500);
 		//con_gotoXY(result[i].x, result[i].y);
+		printf("%d %d\n", result[i].x, result[i].y);
 		//con_outTxt(" ");
 	}
 	free(result);
