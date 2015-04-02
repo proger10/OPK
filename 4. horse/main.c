@@ -5,18 +5,7 @@
 #include <stdio.h>
 #include "console.h"
 
-#define COLOR_BORDER 1
-#define COLOR_FIELD  2
-#define COLOR_POINT  3
-
-
 #define MAP_SIZE 8
-
-static void init_colors() {
-	/*	con_initPair(COLOR_BORDER, CON_COLOR_BLACK, CON_COLOR_BLUE);
-	con_initPair(COLOR_FIELD, CON_COLOR_GREEN, CON_COLOR_GREEN);
-	con_initPair(COLOR_POINT, CON_COLOR_RED, CON_COLOR_GREEN);*/
-}
 
 typedef struct _point{
 	int x;
@@ -66,6 +55,37 @@ char solve(int x, int y, char *map, int *empty, point **result){
 	return success;
 }
 
+void print_horse(point *result){
+	con_init();
+	con_hideCursor();
+	con_clearScr();
+	for (int i = 0; i < 8 + 2; i++){
+		con_gotoXY(i, 0);
+		con_outTxt("#");
+		con_gotoXY(i, 9);
+		con_outTxt("#");
+
+	}
+	for (int i = 0; i < 8 + 2; i++){
+		con_gotoXY(0, i);
+		con_outTxt("#");
+		con_gotoXY(9, i);
+		con_outTxt("#");
+
+	}
+
+	for (int i = MAP_SIZE*MAP_SIZE - 1; i >= 0; i--){
+		con_gotoXY(result[i].x + 1, result[i].y + 1);
+		con_setColor(CON_COLOR_WHITE);
+		con_outTxt("@");
+		Sleep(500);
+		con_gotoXY(result[i].x + 1, result[i].y + 1);
+		//con_setColor(CON_COLOR_BLUE);
+		con_outTxt(" ");
+	}
+	getc(stdin);
+}
+
 void horse(int x, int y){
 	if (!check_point(x - 1, y - 1))
 		return;
@@ -84,15 +104,8 @@ void horse(int x, int y){
 	}
 
 	printf("SOLVED!\n");
-
-	for (int i = MAP_SIZE * MAP_SIZE - 1; i >= 0; i--){
-		//con_gotoXY(result[i].x, result[i].y);
-		//con_outTxt("@");
-		//Sleep(500);
-		//con_gotoXY(result[i].x, result[i].y);
-		printf("%d %d\n", result[i].x, result[i].y);
-		//con_outTxt(" ");
-	}
+	Sleep(500);
+	print_horse(result);
 	free(result);
 }
 
