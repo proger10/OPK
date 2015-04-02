@@ -1,27 +1,61 @@
 #include "queue.h"
 
 void queue_create(Queue *pqueue){
+	if (pqueue == NULL)
+		return;
 	pqueue->initial_size = 50;
 	pqueue->inc = 2;
 	pqueue->q = NULL;
 	pqueue->head = 0;
-	pqueue->tail = 0;
+	pqueue->count = 0;
 	pqueue->qsize = 0;
 }
 
 void queue_destroy(Queue *pqueue){
 	if (pqueue == NULL)
 		return;
+	int size = queue_size(pqueue);
+	for (int i = 0; i < size; i++) {
+		free(queue_dequeue(pqueue));
+	}
+	free(pqueue->q);
 }
 
 bool queue_enqueue(Queue *pqueue, data value){
-	if (pqueue->qsize <= pqueue->tail){
-		//
+	if (pqueue == NULL)
+		return false;
+	if (pqueue->q == NULL){
+		pqueue->qsize = pqueue->initial_size;
+		pqueue->q = (data *)malloc(pqueue->qsize*sizeof(data));
+		if (pqueue->q == NULL){
+			return false;
+		}
 	}
-	pqueue->q[pqueue->tail] = value;
+	if (pqueue->qsize <= pqueue->count){
+		pqueue->qsize *= pqueue->inc;
+		data *newq = (data *)malloc(pqueue->qsize*sizeof(data));
+		if (newq == NULL){
+			pqueue->qsize = 0;
+			pqueue->count = 0;
+			return false;
+		}
+
+		int size = queue_size(pqueue);
+		for (int i = 0; i < size; i++) {
+			newq[i] = queue_dequeue(pqueue);
+		}
+		free(pqueue->q);
+		pqueue->q = newq;
+		pqueue->head = 0;
+	}
+	pqueue->q[(pqueue->head + pqueue->count) % pqueue->qsize] = value;
+	pqueue->count++;
+	return true;
 }
 
 void queue_tune(Queue *pqueue, size_t initial_size, int increment){
+	if (pqueue == NULL)
+		return;
 	if (pqueue == NULL)
 		return;
 	if ((increment>2) && (increment<1000))
@@ -32,21 +66,28 @@ void queue_tune(Queue *pqueue, size_t initial_size, int increment){
 }
 
 size_t queue_size(Queue *pqueue){
-	return pqueue->tail - pqueue->head;
+	if (pqueue == NULL)
+		return 0;
+	return pqueue->count;
 }
 
 
 data queue_dequeue(Queue *pqueue) {
+	if (pqueue == NULL)
+		return NULL;
 	if (queue_size(pqueue) == 0){
 		return NULL;
 	}
 	data res = pqueue->q[pqueue->head];
-
-	res = 
+	pqueue->head = (pqueue->head + 1) % pqueue->qsize;;
+	pqueue->count--;
+	return res;
 
 }
 
 data queue_peek(Queue *pqueue){
+	if (pqueue == NULL)
+		return NULL;
 	if (queue_size(pqueue) == 0){
 		return NULL;
 	}
