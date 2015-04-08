@@ -11,7 +11,6 @@
 #define COLOR_BORDER 3
 #define COLOR_NORMAL 4
 
-<<<<<<< HEAD
 static void init_colors() {
 	//con_initPair(COLOR_HORSE, CON_COLOR_BLUE, CON_COLOR_BLACK);
 	con_initPair(COLOR_HORSE, CON_COLOR_WHITE, CON_COLOR_BLUE);
@@ -20,8 +19,6 @@ static void init_colors() {
 	con_initPair(COLOR_NORMAL, CON_COLOR_WHITE, CON_COLOR_BLACK);
 }
 
-=======
->>>>>>> origin/master
 typedef struct _point{
 	int x;
 	int y;
@@ -71,7 +68,6 @@ char solve(int x, int y, char *map, int *empty, point **result){
 }
 
 void print_horse(point *result){
-<<<<<<< HEAD
 #define CORNER_POS_X  3
 #define CORNER_POS_Y  3
 #define PIXEL_RATIO_X 2
@@ -123,36 +119,6 @@ void print_horse(point *result){
 	con_gotoXY(0, CORNER_POS_Y + PIXEL_RATIO_Y *10);
 	con_setColor(COLOR_NORMAL);
 	con_deinit();
-=======
-	con_init();
-	con_hideCursor();
-	con_clearScr();
-	for (int i = 0; i < 8 + 2; i++){
-		con_gotoXY(i, 0);
-		con_outTxt("#");
-		con_gotoXY(i, 9);
-		con_outTxt("#");
-
-	}
-	for (int i = 0; i < 8 + 2; i++){
-		con_gotoXY(0, i);
-		con_outTxt("#");
-		con_gotoXY(9, i);
-		con_outTxt("#");
-
-	}
-
-	for (int i = MAP_SIZE*MAP_SIZE - 1; i >= 0; i--){
-		con_gotoXY(result[i].x + 1, result[i].y + 1);
-		con_setColor(CON_COLOR_WHITE);
-		con_outTxt("@");
-		Sleep(500);
-		con_gotoXY(result[i].x + 1, result[i].y + 1);
-		//con_setColor(CON_COLOR_BLUE);
-		con_outTxt(" ");
-	}
-	getc(stdin);
->>>>>>> origin/master
 }
 
 void horse(int x, int y){
