@@ -8,7 +8,7 @@
 
 void add_int(int a, Queue *pqueue){
 	int *data = malloc(sizeof(int));
-	assert(data!=NULL);
+	assert(data != NULL);
 	*data = a;
 	int res = queue_enqueue(pqueue, data);
 	assert(res);
@@ -65,7 +65,7 @@ void test2() {
 	add_int(2, &q);
 	add_int(3, &q);
 	add_int(4, &q);
-	
+
 	assert(4 == queue_size(&q));
 	assert(1 == *(int*)queue_peek(&q));
 	v = queue_dequeue(&q);
@@ -90,9 +90,9 @@ void test3() {
 	queue_enqueue(&q, 2);
 	for (unsigned i = 2; i < 4000000000; i++) {
 		unsigned v = queue_dequeue(&q);
-		printf("%d %u\n", i-1, v);
-		assert(v == i-1);
-		bool res = queue_enqueue(&q, i+1);
+		printf("%d %u\n", i - 1, v);
+		assert(v == i - 1);
+		bool res = queue_enqueue(&q, i + 1);
 		if (!res)
 			break;
 	}
