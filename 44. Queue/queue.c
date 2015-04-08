@@ -1,10 +1,13 @@
 #include "queue.h"
 
+#define INITIAL_SIZE 50
+#define INC 2
+
 void queue_create(Queue *pqueue){
 	if (pqueue == NULL)
 		return;
-	pqueue->initial_size = 50;
-	pqueue->inc = 2;
+	pqueue->initial_size = INITIAL_SIZE;
+	pqueue->inc = INC;
 	pqueue->q = NULL;
 	pqueue->head = 0;
 	pqueue->count = 0;
