@@ -43,7 +43,7 @@ void slist_insert(SList *sibling, Pointer data){
 
 	SList *result = (SList *)malloc(sizeof(SList));
 	if (result == NULL){
-		return ;
+		return;
 	}
 	result->data = data;
 	result->next = next;
@@ -90,8 +90,7 @@ Pointer slist_remove_next(SList *sibling){
 		return NULL;
 	if (sibling->next == NULL)
 		return NULL;
-	//Pointer result = sibling->next->data;
-	void *result = sibling->next->data;
+	Pointer result = sibling->next->data;
 	sibling->next = sibling->next->next;
 	free(sibling->next);
 	return result;
@@ -99,7 +98,7 @@ Pointer slist_remove_next(SList *sibling){
 
 void slist_free(SList *list){
 	SList *i = list;
-	while(i != NULL){
+	while (i != NULL){
 		SList *next = i->next;
 		free(i->data);
 		free(i);
@@ -109,7 +108,7 @@ void slist_free(SList *list){
 
 unsigned slist_length(SList *list){
 	unsigned size = 0;
-	for (SList *i = list; i != NULL; i = i -> next){
+	for (SList *i = list; i != NULL; i = i->next){
 		size++;
 	}
 	return size;
@@ -168,7 +167,7 @@ SList *slist_concat(SList *list1, SList *list2){
 	return result;
 }
 
-void slist_foreach(SList *list, void (*func)(Pointer data, Pointer user_data), Pointer user_data){
+void slist_foreach(SList *list, void(*func)(Pointer data, Pointer user_data), Pointer user_data){
 	for (SList *i = list; i != NULL; i = i->next){
 		(*func) (i->data, user_data);
 	}
@@ -184,14 +183,20 @@ SList *slist_last(SList *list){
 
 
 SList *slist_nth(SList *list, int n){
-	int size = slist_length(list);
-	while (n < 0)
-		n += size;
-	int k=0; //?????????
-	SList *i;
-	for (i = list; i != NULL, k!=n; k++, i = i->next){
-		if (i->next == NULL)
-			return i;
+	if (list == NULL)
+		return NULL;
+
+	if (n < 0){
+		int size = slist_length(list);
+		while (n < 0)
+			n += size;
+	}
+	
+	SList *i = list;
+	for (int k = 0; k != n; k++, i = i->next){
+		if (i == NULL){
+			i = list;
+		}
 	}
 	return i;
 }
@@ -213,8 +218,10 @@ SList *slist_find_custom(SList *list, Pointer data, int(*compare_func)(Pointer a
 }
 
 int slist_position(SList *list, SList *el){
-	int k = 0; //?????????
-	SList *i;
+	if (list == NULL)
+		return NULL;
+	int k = 0;
+	SList *i = list;
 	for (i = list; i != NULL; k++, i = i->next){
 		if (i == el)
 			return k;
