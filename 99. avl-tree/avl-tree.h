@@ -1,18 +1,21 @@
 #ifndef AVL_TREE_H
 #define ALV_TREE_H
+
+#include <stdlib.h>
+
 typedef void * Pointer;
 
 typedef int(*CmpFunc)(Pointer data1, Pointer data2);
 
 typedef struct _AVLTreeNode {
 	Pointer data;
+	int balance;
 	/* ... */
 } AVLTreeNode;
 
 typedef struct _AVLTree {
 	AVLTreeNode *root;
-	CmpFunc cmp_func; /* all data comparisons should be done
-					  with help of this func! */
+	CmpFunc cmp_func; /* all data comparisons should be done with help of this func! */
 	/* ... */
 } AVLTree;
 
@@ -37,7 +40,6 @@ Pointer avl_insert(AVLTree *tree, Pointer data);
 Pointer avl_delete(AVLTree *tree, Pointer data);
 
 // Call foreach_func for every node's data in tree passing given extra_data
-void avl_foreach(AVLTree *tree,
-	void(*foreach_func)(Pointer data, Pointer extra_data),
-	Pointer extra_data);
+void avl_foreach(AVLTree *tree, void(*foreach_func)(Pointer data, Pointer extra_data), Pointer extra_data);
+
 #endif
