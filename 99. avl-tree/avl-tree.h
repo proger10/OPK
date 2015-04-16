@@ -10,7 +10,8 @@ typedef int(*CmpFunc)(Pointer data1, Pointer data2);
 typedef struct _AVLTreeNode {
 	Pointer data;
 	int balance;
-	/* ... */
+	struct _AVLTreeNode *left, *right;
+	struct _AVLTreeNode *parent;
 } AVLTreeNode;
 
 typedef struct _AVLTree {
@@ -28,6 +29,7 @@ void avl_clear(AVLTree *tree);
 // Completely destroy tree
 void avl_destroy(AVLTree *tree);
 
+//Count of elements in tree
 size_t avl_size(AVLTree *tree);
 
 // Find element with equal data and return its data if any else NULL
