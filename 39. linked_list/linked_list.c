@@ -3,25 +3,12 @@
 
 SList *slist_append(SList *list, Pointer data){
 	if (list == NULL){
-		SList *result = (SList *)malloc(sizeof(SList));
-		if (result == NULL){
-			return list;
-		}
-		result->data = data;
-		result->next = NULL;
-		return result;
+		return slist_prepend(NULL, data);
 	}
-	SList *ret = list;
-	while (list->next != NULL)
-		list = list->next;
-	SList *result = (SList *)malloc(sizeof(SList));
-	if (result == NULL){
+	else {
+		slist_insert(slist_last(list), data);
 		return list;
 	}
-	result->data = data;
-	result->next = NULL;
-	list->next = result;
-	return ret;
 }
 
 SList *slist_prepend(SList *list, Pointer data){
@@ -58,7 +45,6 @@ SList *slist_remove(SList *list, Pointer data){
 				last->next = i->next;
 			if (i == list)
 				list = list->next;
-			free(i->data);
 			free(i);
 			break;
 		}
@@ -77,10 +63,11 @@ SList *slist_remove_all(SList *list, Pointer data){
 				last->next = i->next;
 			if (i == list)
 				list = list->next;
-			free(i->data);
 			free(i);
 		}
-		last = i;
+		else{
+			last = i;
+		}
 	}
 	return list;
 }
@@ -91,8 +78,9 @@ Pointer slist_remove_next(SList *sibling){
 	if (sibling->next == NULL)
 		return NULL;
 	Pointer result = sibling->next->data;
-	sibling->next = sibling->next->next;
+	SList *next = sibling->next->next;
 	free(sibling->next);
+	sibling->next = next;
 	return result;
 }
 
@@ -100,7 +88,6 @@ void slist_free(SList *list){
 	SList *i = list;
 	while (i != NULL){
 		SList *next = i->next;
-		free(i->data);
 		free(i);
 		i = next;
 	}
@@ -115,20 +102,7 @@ unsigned slist_length(SList *list){
 }
 
 SList *slist_copy(SList *list){
-	SList *result = NULL;
-	SList *p = NULL;
-	for (SList *i = list; i != NULL; i = i->next){
-		if (p == NULL){
-			result = slist_append(result, i->data);
-			p = result;
-		}
-		else{
-			p->next = slist_append(NULL, i->data);
-			p = p->next;
-		}
-
-	}
-	return result;
+	return slist_concat(list, NULL);
 }
 
 SList *slist_reverse(SList *list){
@@ -141,26 +115,25 @@ SList *slist_reverse(SList *list){
 
 SList *slist_concat(SList *list1, SList *list2){
 	SList *result = NULL;
-	SList *p = NULL;
+	SList *last = NULL;
 	for (SList *i = list1; i != NULL; i = i->next){
-		if (p == NULL){
-			result = slist_append(result, i->data);
-			p = result;
+		if (last == NULL){
+			result = slist_prepend(NULL, i->data);
+			last = result;
 		}
 		else{
-			p->next = slist_append(NULL, i->data);
-			p = p->next;
+			last->next = slist_prepend(NULL, i->data);
+			last = last->next;
 		}
-
 	}
 	for (SList *i = list2; i != NULL; i = i->next){
-		if (p == NULL){
-			result = slist_append(result, i->data);
-			p = result;
+		if (last == NULL){
+			result = slist_prepend(NULL, i->data);
+			last = result;
 		}
 		else{
-			p->next = slist_append(NULL, i->data);
-			p = p->next;
+			last->next = slist_prepend(NULL, i->data);
+			last = last->next;
 		}
 
 	}
@@ -209,7 +182,7 @@ SList *slist_find(SList *list, Pointer data){
 	return NULL;
 }
 
-SList *slist_find_custom(SList *list, Pointer data, int(*compare_func)(Pointer a, Pointer b)){
+SList *slist_find_custom(SList *list, Pointer data, int(*compare_func)(Pointer, Pointer)){
 	for (SList *i = list; i != NULL; i = i->next){
 		if ((*compare_func)(i->data, data) == 0)
 			return i;
@@ -219,7 +192,7 @@ SList *slist_find_custom(SList *list, Pointer data, int(*compare_func)(Pointer a
 
 int slist_position(SList *list, SList *el){
 	if (list == NULL)
-		return NULL;
+		return -1;
 	int k = 0;
 	SList *i = list;
 	for (i = list; i != NULL; k++, i = i->next){
