@@ -17,7 +17,6 @@ typedef struct _AVLTreeNode {
 typedef struct _AVLTree {
 	AVLTreeNode *root;
 	CmpFunc cmp_func; /* all data comparisons should be done with help of this func! */
-	/* ... */
 } AVLTree;
 
 // Create empty tree
