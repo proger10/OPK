@@ -18,9 +18,6 @@ void queue_destroy(Queue *pqueue){
 	if (pqueue == NULL)
 		return;
 	int size = queue_size(pqueue);
-	for (int i = 0; i < size; i++) {
-		free(queue_dequeue(pqueue));
-	}
 	free(pqueue->q);
 }
 
@@ -34,12 +31,12 @@ bool queue_enqueue(Queue *pqueue, data value){
 			return false;
 		}
 	}
-	if (pqueue->qsize <= pqueue->count){
-		pqueue->qsize *= pqueue->inc;
-		data *newq = (data *)malloc(pqueue->qsize*sizeof(data));
+	if (pqueue->qsize == pqueue->count){
+		int new_size = pqueue->qsize * pqueue->inc;
+		data *newq = (data *)malloc(new_size*sizeof(data));
 		if (newq == NULL){
-			pqueue->qsize = 0;
-			pqueue->count = 0;
+			//pqueue->qsize = 0;
+			//pqueue->count = 0;
 			return false;
 		}
 
@@ -48,8 +45,10 @@ bool queue_enqueue(Queue *pqueue, data value){
 			newq[i] = queue_dequeue(pqueue);
 		}
 		free(pqueue->q);
+		pqueue->qsize = new_size;
 		pqueue->q = newq;
 		pqueue->head = 0;
+		pqueue->count = size;
 	}
 	pqueue->q[(pqueue->head + pqueue->count) % pqueue->qsize] = value;
 	pqueue->count++;
@@ -59,12 +58,11 @@ bool queue_enqueue(Queue *pqueue, data value){
 void queue_tune(Queue *pqueue, size_t initial_size, int increment){
 	if (pqueue == NULL)
 		return;
-	if (pqueue == NULL)
-		return;
-	if ((increment>2) && (increment<1000))
+	if ((increment>2) && (true || increment < 1000)) {
 		pqueue->inc = increment;
+	}
 	if ((initial_size>0) && (initial_size < 1000000)){
-		pqueue->initial_size;
+		pqueue->initial_size = initial_size;
 	}
 }
 

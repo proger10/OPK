@@ -52,6 +52,9 @@ void test(){
 	add_int(1, &q);
 	add_int(2, &q);
 	add_int(3, &q);
+	assert(test_queue(1, &q));
+	assert(test_queue(2, &q));
+	assert(test_queue(3, &q));
 
 	queue_destroy(&q);
 }
@@ -73,12 +76,16 @@ void test2() {
 	free(v);
 	assert(3 == queue_size(&q));
 
-	queue_dequeue(&q);
+	free(queue_dequeue(&q));
 
 	add_int(5, &q);
 	add_int(6, &q);
 
 	assert(4 == queue_size(&q));
+	free(queue_dequeue(&q));
+	free(queue_dequeue(&q));
+	free(queue_dequeue(&q));
+	free(queue_dequeue(&q));
 	queue_destroy(&q);
 }
 
@@ -88,14 +95,14 @@ void test3() {
 	queue_tune(&q, 2, 2);
 	queue_enqueue(&q, 1);
 	queue_enqueue(&q, 2);
-	for (unsigned i = 2; i < 4000000000; i++) {
+	for (unsigned i = 2; i < 400000; i++) {
 		unsigned v = queue_dequeue(&q);
-		printf("%d %u\n", i - 1, v);
 		assert(v == i - 1);
 		bool res = queue_enqueue(&q, i + 1);
 		if (!res)
 			break;
 	}
+	queue_destroy(&q);
 }
 
 int main(){

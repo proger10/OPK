@@ -4,47 +4,47 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-typedef void *data;
-typedef data Pointer;
-typedef struct _Queue {
-	size_t initial_size;
-	int inc;
-	data *q;
-	size_t qsize;
-	size_t head;
-	size_t count;
-} Queue;
+	typedef void *data;
+	typedef data Pointer;
+	typedef struct _Queue {
+		size_t initial_size;
+		int inc;
+		data *q;
+		size_t qsize;
+		size_t head;
+		size_t count;
+	} Queue;
 
 
-/* РЎРѕР·РґР°С‚СЊ РїСѓСЃС‚СѓСЋ РѕС‡РµСЂРµРґСЊ */
-void queue_create(Queue *pqueue);
+	/* Создать пустую очередь */
+	void queue_create(Queue *pqueue);
 
-/* РЈРЅРёС‡С‚РѕР¶РёС‚СЊ РѕС‡РµСЂРµРґСЊ, РѕСЃРІРѕР±РѕРґРёРІ РІС‹РґРµР»РµРЅРЅСѓСЋ РїР°РјСЏС‚СЊ */
-void queue_destroy(Queue *pqueue);
+	/* Уничтожить очередь, освободив выделенную память */
+	void queue_destroy(Queue *pqueue);
 
-/* РџРѕРјРµСЃС‚РёС‚СЊ Р·РЅР°С‡РµРЅРёРµ value РІ РєРѕРЅРµС† РѕС‡РµСЂРµРґРё */
-bool queue_enqueue(Queue *pqueue, data value);
+	/* Поместить значение value в конец очереди */
+	bool queue_enqueue(Queue *pqueue, data value);
 
-/* Р’РѕР·РІСЂР°С‰Р°РµС‚ РєРѕР»РёС‡РµСЃС‚РІРѕ СЌР»РµРјРµРЅС‚РѕРІ РІ РѕС‡РµСЂРµРґРё (0, РµСЃР»Рё РѕС‡РµСЂРµРґСЊ РїСѓСЃС‚Р°) */
-size_t queue_size(Queue *pqueue);
+	/* Возвращает количество элементов в очереди (0, если очередь пуста) */
+	size_t queue_size(Queue *pqueue);
 
-/* РСЃРєР»СЋС‡РёС‚СЊ Рё РІРµСЂРЅСѓС‚СЊ Р·РЅР°С‡РµРЅРёРµ РїРµСЂРІРѕРіРѕ СЌР»РµРјРµРЅС‚Р° РѕС‡РµСЂРµРґРё.
-Р•СЃР»Рё РѕС‡РµСЂРµРґСЊ РїСѓСЃС‚Р°, РІРѕР·РІСЂР°С‰Р°РµС‚ 0 */
-data queue_dequeue(Queue *pqueue);
+	/* Исключить и вернуть значение первого элемента очереди.
+	Если очередь пуста, возвращает 0 */
+	data queue_dequeue(Queue *pqueue);
 
-/*
-* Р’РѕР·РІСЂР°С‰Р°РµС‚ Р·РЅР°С‡РµРЅРёРµ РїРµСЂРІРѕРіРѕ СЌР»РµРјРµРЅС‚Р°, РЅРµ СѓРґР°Р»СЏСЏ РµРіРѕ РёР· РѕС‡РµСЂРµРґРё.
-* Р•СЃР»Рё РѕС‡РµСЂРµРґСЊ РїСѓСЃС‚Р°, РІРѕР·РІСЂР°С‰Р°РµС‚ 0
-*/
-data queue_peek(Queue *pqueue);
+	/*
+	* Возвращает значение первого элемента, не удаляя его из очереди.
+	* Если очередь пуста, возвращает 0
+	*/
+	data queue_peek(Queue *pqueue);
 
-/*
-* РќР°СЃС‚СЂР°РёРІР°РµС‚ РїР°СЂР°РјРµС‚СЂС‹ РѕС‡РµСЂРµРґРё.
-* initial_size: РЅР°С‡Р°Р»СЊРЅС‹Р№ СЂР°Р·РјРµСЂ РѕС‡РµСЂРµРґРё, РїСЂРё РїРµСЂРІРѕРј РІС‹РґРµР»РµРЅРёРё РїР°РјСЏС‚Рё
-*               (РїРѕ СѓРјРѕР»С‡.: 50)
-* increment: РЅР° СЃРєРѕР»СЊРєРѕ СЌР»РµРјРµРЅС‚РѕРІ СЂР°СЃС€РёСЂСЏС‚СЊ РѕС‡РµСЂРµРґСЊ РїСЂРё РїРѕСЃР»РµРґСѓСЋС‰РёС…
-*            РІС‹РґРµР»РµРЅРёСЏС… РїР°РјСЏС‚Рё
-*/
-void queue_tune(Queue *pqueue, size_t initial_size, int increment);
+	/*
+	* Настраивает параметры очереди.
+	* initial_size: начальный размер очереди, при первом выделении памяти
+	*               (по умолч.: 50)
+	* increment: на сколько элементов расширять очередь при последующих
+	*            выделениях памяти
+	*/
+	void queue_tune(Queue *pqueue, size_t initial_size, int increment);
 
 #endif

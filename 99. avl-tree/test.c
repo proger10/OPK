@@ -5,9 +5,13 @@
 #include <string.h>
 #include <assert.h>
 #include <stdbool.h>
+#include <stdio.h>
 
-#define SIZE 256
-#define LOAD 2740
+#define SIZE 1024
+#define LOAD 13370
+
+
+void test();
 
 int intcmp(void *a, void *b){
 	return *((int *)a) - *((int *)b);
@@ -19,10 +23,10 @@ void foreach(void *data, void *table){
 }
 
 int **make_data(){
-	int **result = (int **) malloc(SIZE*sizeof(int *));
+	int **result = (int **)malloc(SIZE*sizeof(int *));
 	assert(result != NULL);
 	for (int i = 0; i < SIZE; i++){
-		result[i] = (int *) malloc(sizeof(int));
+		result[i] = (int *)malloc(sizeof(int));
 		assert(result[i] != NULL);
 		*result[i] = i;
 	}
@@ -41,7 +45,7 @@ void test_all(){
 	assert(avl_size(tree) == 0);
 	avl_destroy(tree);
 
-	
+
 	/*Create, clear and destroy tree*/
 	tree = avl_create(intcmp);
 	assert(avl_size(tree) == 0);
@@ -54,7 +58,7 @@ void test_all(){
 	tree = avl_create(intcmp);
 	int **test = make_data();
 	for (int i = 0; i < SIZE; i++){
-		int *res = (int *) avl_insert(tree, test[i]);
+		int *res = (int *)avl_insert(tree, test[i]);
 		assert(res == NULL);
 		assert(avl_size(tree) == i + 1);
 	}
@@ -74,20 +78,20 @@ void test_all(){
 	}
 
 	//foreach test
-	bool *foreachtest = (bool *) calloc(SIZE, sizeof(bool));
+	bool *foreachtest = (bool *)calloc(SIZE, sizeof(bool));
 	assert(foreachtest != NULL);
 	avl_foreach(tree, foreach, foreachtest);
 	for (int i = 0; i < SIZE; i++){
 		assert(foreachtest[i]);
 	}
 	free(foreachtest);
-	
+
 
 	//delete test
 	for (int i = 0; i < SIZE; i++){
 		int *res = (int *)avl_delete(tree, &i);
 		assert(*res == i);
-		assert(avl_size(tree) == SIZE-1-i);
+		assert(avl_size(tree) == SIZE - 1 - i);
 
 	}
 
@@ -118,25 +122,29 @@ void test_load(){
 	int freed = 0;
 	assert(tree != NULL);
 	for (int i = 0; i < LOAD; i++){
-		int *add = (int *) malloc(sizeof(int));
-		*add =  rand();
-		int *res;
-		if (i==273)
-			res = (int *)avl_insert(tree, add);
-		else
-			res = (int *)avl_insert(tree, add);
+		int *add = (int *)malloc(sizeof(int));
+		*add = rand();
+		int *res = (int *)avl_insert(tree, add);
+
 		if (res != NULL){
 			free(res);
 			replaced++;
 		}
 		int size = avl_size(tree);
-		assert(size == i +1 - deleted - replaced);
-	//	int del = 1;// rand();
-	//	res = avl_delete(tree, &del);
-	//	if (res != NULL){
-	//		free(res);
-	//		deleted++;
-	//	}
+		assert(size == i + 1 - deleted - replaced);
+
+		/*int del = rand();
+		if (i == 3563)
+		del = del;
+		res = (int *) avl_delete(tree, &del);
+		if (res != NULL){
+		free(res);
+		deleted++;
+		}
+		*/
+		size = avl_size(tree);
+		printf("%d\n", i);
+		assert(size == i + 1 - deleted - replaced);
 	}
 	avl_foreach(tree, foreachfree, &freed);
 

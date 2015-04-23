@@ -1,6 +1,7 @@
 #include "avl-tree.h"
 #include "queue.h"
 #include <stdlib.h>
+#include <assert.h>
 
 AVLTree *avl_create(CmpFunc cmp_func){
 	AVLTree *result = (AVLTree *)malloc(sizeof(AVLTree));
@@ -32,18 +33,34 @@ void avl_destroy(AVLTree *tree){
 }
 
 size_t avl_size(AVLTree *tree){
+	if (tree->root == NULL) {
+		return 0;
+	}
+
 	int result = 0;
 	Queue *q = (Queue *)malloc(sizeof(Queue));
 	queue_create(q);
-	queue_enqueue(q, tree->root);
+	int en = 0;
+	en++;
+	bool res = queue_enqueue(q, tree->root);
+	assert(res);
 	AVLTreeNode *node = NULL;
-	while (node = (AVLTreeNode *) queue_dequeue(q)){
-		if (node->left != NULL)
-			queue_enqueue(q, node->left);
-		if (node->right != NULL)
-			queue_enqueue(q, node->right);
+	while (node = (AVLTreeNode *)queue_dequeue(q)){
 		result++;
+		int size = queue_size(q);
+		assert(size == en - result);
+		if (node->left != NULL) {
+			bool res = queue_enqueue(q, node->left);
+			assert(res);
+			en++;
+		}
+		if (node->right != NULL) {
+			bool res = queue_enqueue(q, node->right);
+			assert(res);
+			en++;
+		}
 	}
+	assert(en == result);
 	queue_destroy(q);
 	free(q);
 	return result;
@@ -74,9 +91,13 @@ Pointer avl_find(AVLTree *tree, Pointer data){
 	return node->data;
 }
 
-static AVLTree *avl_balance(AVLTree *tree){
+static void avl_left_left_case(AVLTree *tree, AVLTreeNode *pivot){
+
+}
+
+static void avl_balance(AVLTree *tree){
 	//todo balance
-	return tree;
+	return ;
 }
 
 Pointer avl_insert(AVLTree *tree, Pointer data){
@@ -101,14 +122,15 @@ Pointer avl_insert(AVLTree *tree, Pointer data){
 	}
 	AVLTreeNode *node = (AVLTreeNode *)malloc(sizeof(AVLTreeNode));
 	node->data = data;
- 	node->left = node->right = NULL;
+	node->left = node->right = NULL;
 	node->parent = parent;
+	node->balance = 0;
 	*addto = node;
 
 	avl_balance(tree);
 
 	return NULL;
-		
+
 }
 
 Pointer avl_delete(AVLTree *tree, Pointer data){
@@ -116,7 +138,7 @@ Pointer avl_delete(AVLTree *tree, Pointer data){
 	AVLTreeNode **remfrom = NULL;
 	if (node == NULL)
 		return NULL;
-	//AVLTreeNode **remfrom = &(tree->root); ??????????????????????????????????????????????????????
+	//AVLTreeNode **remfrom = &(tree->root);// ??????????????????????????????????????????????????????
 	remfrom = &(tree->root);
 	if (node->parent != NULL){
 		if (node->parent->left == node)
@@ -126,48 +148,101 @@ Pointer avl_delete(AVLTree *tree, Pointer data){
 	}
 	Pointer result = node->data;
 
+	//Node without children
 	if ((node->left == NULL) && (node->right == NULL)){
+		//Unkink node and parent node
 		*remfrom = NULL;
+		//Free node
 		free(node);
 	}
-	else
-	if ((node->left == NULL) && (node->right != NULL)){
-		AVLTreeNode *delnode = node->right;
-		node->data = delnode->data;
-		node->left = delnode->left;
-		node->right = delnode->right;
-		free(delnode);
-	}
-	else
-	if ((node->left != NULL) && (node->right == NULL)){
-		AVLTreeNode *delnode = node->left;
-		node->data = delnode->data;
-		node->left = delnode->left;
-		node->right = delnode->right;
-		free(delnode);
-	}
 	else{
-		AVLTreeNode *delnode=node;
-		//left subtree less than right subtree
-		if (delnode->balance < 0){
-			delnode = node->left;
-			//find most right node in left subtree
-			while (delnode->right != NULL)
-				delnode = delnode->right;
-
-		}else{
-			//right subtree greater or equal than left subtree
-			delnode = node->right;
-			//find most left node in right subtree
-			while (delnode->left != NULL)
-				delnode = delnode->left;
-			
+		//Node with one (right) child
+		if ((node->left == NULL) && (node->right != NULL)){
+			AVLTreeNode *replnode = node->right;
+			node->data = replnode->data;
+			node->left = replnode->left;
+			node->right = replnode->right;
+			//Fix parent for replnode children
+			if (node->left){
+				node->left->parent = node;
+			}
+			if (node->right){
+				node->right->parent = node;
+			}
+			//Free replacing node
+			free(replnode);
 		}
-		node->data = delnode->data;
-		node->left = delnode->left;
-		node->right = delnode->right;
-		free(delnode);
+		else{
+			//Node with one (left) child
+			if ((node->left != NULL) && (node->right == NULL)){
+				AVLTreeNode *replnode = node->left;
+				node->data = replnode->data;
+				node->left = replnode->left;
+				node->right = replnode->right;
+				//Fix parent for replnode children
+				if (node->left){
+					node->left->parent = node;
+				}
+				if (node->right){
+					node->right->parent = node;
+				}
+				//Free replacing node
+				free(replnode);
+			}
+			else{
+				//Node with both children
+				AVLTreeNode *replnode;// node to replace
+				AVLTreeNode *child; // child node
+
+				if (node->balance < 0){
+					//left subtree less than right subtree
+					replnode = node->left;
+					//find most right node in left subtree
+					while (replnode->right != NULL)
+						replnode = replnode->right;
+					child = replnode->left;
+				}
+				else{
+					//right subtree greater than or equal to left subtree
+					replnode = node->right;
+					//find most left node in right subtree
+					while (replnode->left != NULL)
+						replnode = replnode->left;
+					child = replnode->right;
+
+				}
+				//Replace data for deleting node
+				node->data = replnode->data;
+				if (child == NULL){
+					//if repacing node have no child
+					//unlink parent
+					if (replnode->parent->left == replnode)
+						replnode->parent->left = NULL;
+					if (replnode->parent->right == replnode)
+						replnode->parent->right = NULL;
+					//free replacing node
+					free(replnode);
+				}
+				else{
+					//replacing node have a child
+					//move child to replacing node
+					replnode->data = child->data;
+					replnode->left = child->left;
+					replnode->right = child->right;
+					//Fix parent for child children
+					if (child->left){
+						child->left->parent = replnode;
+					}
+					if (child->right){
+						child->right->parent = replnode;
+					}
+					//free child
+					free(child);
+				}
+			}
+		}
 	}
+
 	avl_balance(tree);
 	return result;
 }
@@ -177,7 +252,7 @@ void avl_foreach(AVLTree *tree, void(*foreach_func)(Pointer data, Pointer extra_
 	queue_create(q);
 	queue_enqueue(q, tree->root);
 	AVLTreeNode *node = NULL;
-	while (node = (AVLTreeNode *) queue_dequeue(q)){
+	while (node = (AVLTreeNode *)queue_dequeue(q)){
 		if (node->left != NULL)
 			queue_enqueue(q, node->left);
 		if (node->right != NULL)
