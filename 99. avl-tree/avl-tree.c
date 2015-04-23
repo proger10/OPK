@@ -5,25 +5,26 @@
 
 AVLTree *avl_create(CmpFunc cmp_func){
 	AVLTree *result = (AVLTree *)malloc(sizeof(AVLTree));
+	if (result == NULL)
+		return NULL;
 	result->cmp_func = cmp_func;
 	result->root = NULL;
 	return result;
 }
 
 void avl_clear(AVLTree *tree){
-	Queue *q = (Queue *)malloc(sizeof(Queue));
-	queue_create(q);
-	queue_enqueue(q, tree->root);
+	Queue q;
+	queue_create(&q);
+	queue_enqueue(&q, tree->root);
 	AVLTreeNode *node = NULL;
-	while (node = (AVLTreeNode *)queue_dequeue(q)){
+	while (node = (AVLTreeNode *)queue_dequeue(&q)){
 		if (node->left != NULL)
-			queue_enqueue(q, node->left);
+			queue_enqueue(&q, node->left);
 		if (node->right != NULL)
-			queue_enqueue(q, node->right);
+			queue_enqueue(&q, node->right);
 		free(node);
 	}
-	queue_destroy(q);
-	free(q);
+	queue_destroy(&q);
 	tree->root = NULL;
 }
 
@@ -33,36 +34,24 @@ void avl_destroy(AVLTree *tree){
 }
 
 size_t avl_size(AVLTree *tree){
-	if (tree->root == NULL) {
-		return 0;
-	}
-
 	int result = 0;
-	Queue *q = (Queue *)malloc(sizeof(Queue));
-	queue_create(q);
-	int en = 0;
-	en++;
-	bool res = queue_enqueue(q, tree->root);
+	Queue q;
+	queue_create(&q);
+	bool res = queue_enqueue(&q, tree->root);
 	assert(res);
 	AVLTreeNode *node = NULL;
-	while (node = (AVLTreeNode *)queue_dequeue(q)){
+	while (node = (AVLTreeNode *)queue_dequeue(&q)){
 		result++;
-		int size = queue_size(q);
-		assert(size == en - result);
 		if (node->left != NULL) {
-			bool res = queue_enqueue(q, node->left);
+			bool res = queue_enqueue(&q, node->left);
 			assert(res);
-			en++;
 		}
 		if (node->right != NULL) {
-			bool res = queue_enqueue(q, node->right);
+			bool res = queue_enqueue(&q, node->right);
 			assert(res);
-			en++;
 		}
 	}
-	assert(en == result);
-	queue_destroy(q);
-	free(q);
+	queue_destroy(&q);
 	return result;
 }
 
@@ -71,15 +60,19 @@ static AVLTreeNode *avl_find_node(AVLTree *tree, Pointer data){
 	while (node != NULL){
 		//function like "return data-nodedata;"
 		int cmp_res = tree->cmp_func(data, node->data);
-		//item found
-		if (cmp_res == 0)
+		if (cmp_res == 0){
+			//item found
 			return node;
-		//data less than nodedata. go to left
-		if (cmp_res < 0)
+		}
+		else if (cmp_res < 0){
+			//data less than nodedata. go to left
 			node = node->left;
-		//data bigger than nodedata. go to rigth
-		if (cmp_res > 0)
+		}
+		else {
+			assert(cmp_res > 0);
+			//data bigger than nodedata. go to rigth
 			node = node->right;
+		}
 	}
 	return NULL;
 }
@@ -91,13 +84,189 @@ Pointer avl_find(AVLTree *tree, Pointer data){
 	return node->data;
 }
 
-static void avl_left_left_case(AVLTree *tree, AVLTreeNode *pivot){
+static void avl_left_right_case_rotation(AVLTree *tree, AVLTreeNode *pivot){
+	int balance_case = pivot->left->right->balance;
+	assert(abs(balance_case) <= 1);
 
+
+	AVLTreeNode *subtreeA = pivot->left->left;
+	AVLTreeNode *subtreeB = pivot->left->right->left;
+	AVLTreeNode *subtreeC = pivot->left->right->right;
+	AVLTreeNode *subtreeD = pivot->left;
+
+	AVLTreeNode *a_node = pivot;
+	AVLTreeNode *b_node = pivot->left;
+	AVLTreeNode *c_node = pivot->left->right;
+
+	Pointer a_data = a_node->data;
+	Pointer b_data = b_node->data;
+	Pointer c_data = c_node->data;
+	
+	//Fix new root (c node)
+	a_node->data = c_data;
+	a_node->left = b_node;
+	a_node->right = c_node;
+	a_node->balance = 0;
+
+	//Fix b node
+	b_node->left = subtreeA;
+	b_node->right = subtreeB;
+	b_node->parent = a_node;
+	if (balance_case == -1)
+		b_node->balance = 1;
+	else
+		b_node->balance = 0;
+
+	//Fix c node
+	c_node->left = subtreeC;
+	c_node->right = subtreeD;
+	c_node->data = a_data;
+	if (balance_case == 1)
+		c_node->balance = -1;
+	else
+		c_node->balance = 0;
+}
+
+static void avl_right_left_case_rotation(AVLTree *tree, AVLTreeNode *pivot){
+	int balance_case = pivot->right->left->balance;
+	assert(abs(balance_case) <= 1);
+
+
+	AVLTreeNode *subtreeA = pivot->left;
+	AVLTreeNode *subtreeB = pivot->right->left->left;
+	AVLTreeNode *subtreeC = pivot->right->left->right;
+	AVLTreeNode *subtreeD = pivot->right->right;
+
+	AVLTreeNode *a_node = pivot;
+	AVLTreeNode *b_node = pivot->right;
+	AVLTreeNode *c_node = pivot->right->left;
+
+	Pointer a_data = a_node->data;
+	Pointer b_data = b_node->data;
+	Pointer c_data = c_node->data;
+
+	//Fix new root (c node)
+	a_node->data = c_data;
+	a_node->left = c_node;
+	a_node->right = b_node;
+	a_node->balance = 0;
+
+	//Fix b node
+	b_node->left = subtreeC;
+	b_node->right = subtreeD;
+	b_node->parent = a_node;
+	if (balance_case == 1)
+		b_node->balance = -1;
+	else
+		b_node->balance = 0;
+
+	//Fix c node
+	c_node->left = subtreeA;
+	c_node->right = subtreeB;
+	c_node->data = a_data;
+	if (balance_case == -1)
+		c_node->balance = -1;
+	else
+		c_node->balance = 0;
+}
+
+static void avl_left_left_case_rotation(AVLTree *tree, AVLTreeNode *pivot){
+	int balance_case_x = pivot->left->left->balance;
+	int balance_case = pivot->left->balance;
+	assert((balance_case == 1) || (balance_case == 0));
+	assert(abs(balance_case_x) <= 1);
+
+
+	AVLTreeNode *a_node = pivot;
+	AVLTreeNode *b_node = pivot->left;
+	AVLTreeNode *c_node = pivot->left->left;
+
+	AVLTreeNode *subtreeA = c_node->left;
+	AVLTreeNode *subtreeB = c_node->right;
+	AVLTreeNode *subtreeC = b_node->right;
+	AVLTreeNode *subtreeD = a_node->right;
+
+	Pointer a_data = a_node->data;
+	Pointer b_data = b_node->data;
+	Pointer c_data = c_node->data;
+
+	//Fix new root (c node)
+	a_node->data = b_data;
+	a_node->left = b_node;
+	a_node->right = c_node;
+	if (balance_case == 1)
+		a_node->balance = 0;
+	else
+		a_node->balance = -1;
+
+	//Fix b node
+	b_node->data = c_data;
+	b_node->left = subtreeA;
+	b_node->right = subtreeB;
+	b_node->parent = a_node;
+	b_node->balance = balance_case_x;
+
+	//Fix c node
+	c_node->data = a_data;
+	c_node->left = subtreeC;
+	c_node->right = subtreeD;
+	c_node->parent = a_node;
+	if (balance_case == 1)
+		a_node->balance = 0;
+	else
+		a_node->balance = 1;
+}
+
+static void avl_right_right_case_rotation(AVLTree *tree, AVLTreeNode *pivot){
+	int balance_case_x = pivot->left->left->balance;
+	int balance_case = pivot->left->balance;
+	assert((balance_case == 1) || (balance_case == 0));
+	assert(abs(balance_case_x) <= 1);
+
+
+	AVLTreeNode *a_node = pivot;
+	AVLTreeNode *b_node = pivot->left;
+	AVLTreeNode *c_node = pivot->left->left;
+
+	AVLTreeNode *subtreeA = c_node->left;
+	AVLTreeNode *subtreeB = c_node->right;
+	AVLTreeNode *subtreeC = b_node->right;
+	AVLTreeNode *subtreeD = a_node->right;
+
+	Pointer a_data = a_node->data;
+	Pointer b_data = b_node->data;
+	Pointer c_data = c_node->data;
+
+	//Fix new root (c node)
+	a_node->data = b_data;
+	a_node->left = b_node;
+	a_node->right = c_node;
+	if (balance_case == 1)
+		a_node->balance = 0;
+	else
+		a_node->balance = -1;
+
+	//Fix b node
+	b_node->data = c_data;
+	b_node->left = subtreeA;
+	b_node->right = subtreeB;
+	b_node->parent = a_node;
+	b_node->balance = balance_case_x;
+
+	//Fix c node
+	c_node->data = a_data;
+	c_node->left = subtreeC;
+	c_node->right = subtreeD;
+	c_node->parent = a_node;
+	if (balance_case == 1)
+		a_node->balance = 0;
+	else
+		a_node->balance = 1;
 }
 
 static void avl_balance(AVLTree *tree){
 	//todo balance
-	return ;
+	return;
 }
 
 Pointer avl_insert(AVLTree *tree, Pointer data){
@@ -116,11 +285,15 @@ Pointer avl_insert(AVLTree *tree, Pointer data){
 		//data less than nodedata. go to left
 		if (cmp_res < 0)
 			addto = &((*addto)->left);
-		//data bigger than nodedata. go to rigth
+		//data bigger than nodedata. go to right
 		if (cmp_res > 0)
 			addto = &((*addto)->right);
 	}
 	AVLTreeNode *node = (AVLTreeNode *)malloc(sizeof(AVLTreeNode));
+	if (node == NULL)
+	{
+		return NULL;
+	}
 	node->data = data;
 	node->left = node->right = NULL;
 	node->parent = parent;
@@ -135,11 +308,11 @@ Pointer avl_insert(AVLTree *tree, Pointer data){
 
 Pointer avl_delete(AVLTree *tree, Pointer data){
 	AVLTreeNode *node = avl_find_node(tree, data);
-	AVLTreeNode **remfrom = NULL;
+	//AVLTreeNode **remfrom = NULL;
 	if (node == NULL)
 		return NULL;
-	//AVLTreeNode **remfrom = &(tree->root);// ??????????????????????????????????????????????????????
-	remfrom = &(tree->root);
+	AVLTreeNode **remfrom = &(tree->root);// ??????????????????????????????????????????????????????
+	//remfrom = &(tree->root);
 	if (node->parent != NULL){
 		if (node->parent->left == node)
 			remfrom = &(node->parent->left);
@@ -248,17 +421,16 @@ Pointer avl_delete(AVLTree *tree, Pointer data){
 }
 
 void avl_foreach(AVLTree *tree, void(*foreach_func)(Pointer data, Pointer extra_data), Pointer extra_data){
-	Queue *q = (Queue *)malloc(sizeof(Queue));
-	queue_create(q);
-	queue_enqueue(q, tree->root);
+	Queue q;
+	queue_create(&q);
+	queue_enqueue(&q, tree->root);
 	AVLTreeNode *node = NULL;
-	while (node = (AVLTreeNode *)queue_dequeue(q)){
+	while (node = (AVLTreeNode *)queue_dequeue(&q)){
 		if (node->left != NULL)
-			queue_enqueue(q, node->left);
+			queue_enqueue(&q, node->left);
 		if (node->right != NULL)
-			queue_enqueue(q, node->right);
+			queue_enqueue(&q, node->right);
 		foreach_func(node->data, extra_data);
 	}
-	queue_destroy(q);
-	free(q);
+	queue_destroy(&q);
 }
