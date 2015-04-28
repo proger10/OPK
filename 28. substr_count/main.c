@@ -24,6 +24,7 @@ void test(){
 	assert(substring_count("sss", "s") == 3);
 	assert(substring_count("sss", "ss") == 2);
 	assert(substring_count("sss", "sss") == 1);
+	assert(substring_count("sss", "ssss") == 0);
 }
 
 int main(){

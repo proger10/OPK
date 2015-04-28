@@ -1,4 +1,8 @@
+#define _CRTDBG_MAP_ALLOC
 #define _CRT_SECURE_NO_WARNINGS
+#include <stdlib.h>
+#include <crtdbg.h>
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -66,6 +70,8 @@ int week_day(int d, int m, int y){
 char **cal_month(unsigned year, unsigned month){
 	if ((year < 0) || (year>9999) || (month < 1) || (month>12)){
 		char **nope = (char **)calloc(1, sizeof(char**));
+		if (!nope)
+			return NULL;
 		nope[0] = NULL;
 		return nope;
 	}
@@ -77,23 +83,32 @@ char **cal_month(unsigned year, unsigned month){
 	int* year_days = is_leap(year) ? leap_year : usual_year;
 
 	int firstday = week_day(1, month + 1, year);
-	int res_size = ((year_days[month] + firstday) / 7) + (((year_days[month] + firstday) % 7 == 0 )?0:1) + 3;
+	int res_size = ((year_days[month] + firstday) / 7) + (((year_days[month] + firstday) % 7 == 0) ? 0 : 1) + 3;
 
 	char **result = (char **)calloc(res_size, sizeof(char *));
+	if (result == NULL)
+		return NULL;
 	result[res_size - 1] = NULL;
 
 	result[0] = (char *)calloc(21, sizeof(char));
+	if (result[0] == NULL)
+		return NULL;
 	memset(result[0], ' ', 20);
 	result[0][10 - (strlen(month_names[month]) + 5) / 2] = '\0';
 	sprintf(result[0], "%s%s %4d", result[0], month_names[month], year);
-	memset(result[0] + strlen(result[0]) , ' ', 20 - strlen(result[0]));
+	memset(result[0] + strlen(result[0]), ' ', 20 - strlen(result[0]));
 
 	result[1] = (char *)calloc(21, sizeof(char));
+	if (result[1] == NULL)
+		return NULL;
+	
 	sprintf(result[1], "%s", header);
 
 	int p_day = 1 - firstday;
 	for (int i = 0; i < res_size - 3; i++){
-		result[2+i] = (char *)calloc(21, sizeof(char));
+		result[2 + i] = (char *)calloc(21, sizeof(char));
+		if (result[2+i] == NULL)
+			return NULL;
 		sprintf(result[2 + i], "%2d %2d %2d %2d %2d %2d %2d",
 			(p_day - 1) % year_days[month] + 1,
 			(p_day + 0) % year_days[month] + 1,
@@ -105,7 +120,7 @@ char **cal_month(unsigned year, unsigned month){
 		if (p_day < 1)
 			memset(result[2 + i], ' ', (1 - p_day) * 3);
 		if (p_day + 7 > year_days[month])
-			memset(result[2 + i] + (1 - p_day + year_days[month]) * 3 -1 , ' ', (p_day +6 - year_days[month])*3);
+			memset(result[2 + i] + (1 - p_day + year_days[month]) * 3 - 1, ' ', (p_day + 6 - year_days[month]) * 3);
 		p_day += 7;
 	}
 	return result;
@@ -130,14 +145,16 @@ void cal_free_result(char **calendar){
 char **cal_year(unsigned year){
 	if ((year < 0) || (year>9999)){
 		char **nope = (char **)calloc(1, sizeof(char**));
+		if (nope == NULL)
+			return NULL;
 		nope[0] = NULL;
 		return nope;
 	}
 	char **months[12];
 	int res_size = 6;
-	int max_lines[4] = {0};
+	int max_lines[4] = { 0 };
 	for (int i = 0; i < 12; i++){
-		months[i] = cal_month(year, i+1);
+		months[i] = cal_month(year, i + 1);
 		int t_size = cal_lines(months[i]);
 		if (max_lines[i / 3] < t_size){
 			max_lines[i / 3] = t_size;
@@ -148,40 +165,53 @@ char **cal_year(unsigned year){
 	}
 	res_size += max_lines[3];
 	char **result = (char **)calloc(res_size, sizeof(char *));
+	if (result == NULL)
+		return NULL;
 	result[res_size - 1] = NULL;
 
 	result[0] = (char *)calloc(65, sizeof(char));
+	if (result[0] == NULL)
+		return NULL;
 	memset(result[0], ' ', 30);
 	sprintf(result[0], "%s%4d", result[0], year);
 
 	result[1] = (char *)calloc(2, sizeof(char));
+	if (result[1] == NULL)
+		return NULL;
 	result[1][0] = ' ';
 	char *magicstr = "                    ";
 
 	int res_shift = 2;
 	for (int i = 0; i < 4; i++){
-		char **a = cal_month(year, i * 3 + 1);
-		char **b = cal_month(year, i * 3 + 2);
-		char **c = cal_month(year, i * 3 + 3);
-		char **t_a = a;
-		char **t_b = b;
-		char **t_c = c;
+		char **a = months[i * 3];
+		if (a == NULL)
+			return NULL;
+		char **b = months[i * 3+1];
+		if (b == NULL)
+			return NULL;
+		char **c = months[i * 3 + 2];
+		if (c == NULL)
+			return NULL;
 		for (int j = 0; j < max_lines[i]; j++){
 			result[res_shift + j] = (char *)calloc(65, sizeof(char));
+			if (result[res_shift + j] == NULL)
+				return NULL;
 			sprintf(result[res_shift + j], "%s  %s  %s", (*a) ? (*a) : magicstr, (*b) ? (*b) : magicstr, (*c) ? (*c) : magicstr);
-			if (*a) 
+			if (*a)
 				a++;
 			if (*b)
 				b++;
 			if (*c)
 				c++;
 		}
-		cal_free_result(t_a);
-		cal_free_result(t_b);
-		cal_free_result(t_c);
+		cal_free_result(months[i * 3]);
+		cal_free_result(months[i * 3+1]);
+		cal_free_result(months[i * 3+2]);
 		res_shift += max_lines[i];
 		if (i != 3){
 			result[res_shift] = (char *)calloc(2, sizeof(char));
+			if (result[res_shift] == NULL)
+				return NULL;
 			result[res_shift][0] = ' ';
 			res_shift++;
 		}
@@ -201,5 +231,7 @@ int main(){
 	char **t = cal_year(1971);
 	//char **t = cal_month(2011, 1);
 	cal_print(t);
+	cal_free_result(t);
+	_CrtDumpMemoryLeaks();
 	return 0;
 }

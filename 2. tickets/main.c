@@ -1,33 +1,32 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
 
 int main(){
-	int all = 0;
 	int good = 0;
-	for (int i = 0; i < 1000000; i++){
-		all++;
+	int arr[28] = {};
+
+	for (int i = 0; i < 1000; i++){
 		int ticket = i;
-		int side1 = 0;
-		int side2 = 0;
+		int side = 0;
 
-		side1 += ticket % 10;
+		side += ticket % 10;
 		ticket /= 10;
-		side1 += ticket % 10;
+		side += ticket % 10;
 		ticket /= 10;
-		side1 += ticket % 10;
+		side += ticket % 10;
 		ticket /= 10;
 
-		side2 += ticket % 10;
-		ticket /= 10;
-		side2 += ticket % 10;
-		ticket /= 10;
-		side2 += ticket % 10;
-		if (side1 == side2){
-			good++;
-		}
+		arr[side]++;
 	}
 
+	for (int i = 0; i < 9 + 9 + 9 + 1; i++){
+		good += arr[i] * arr[i];
+	}
+
+
 	printf("Number of Good tickets is %d\n", good);
-	printf("Percentage of Good tickets is %.2lf\n", (double)100 * good / all);
+	printf("Percentage of Good tickets is %.2lf\n", (double)100 * good / 1000000);
 
 	return 0;
 }

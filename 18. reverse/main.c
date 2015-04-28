@@ -22,16 +22,11 @@ int read_int(const char * request) {
 	}
 }
 
-void randomize_array(int arr[], int n){
-	for (int i = 0; i < n; i++){
-		for (int j = i + 1; j < n; j++){
-			//			if (arr[i] < arr[j]){
-			if (rand() % 2 == 0){
-				int t = arr[j];
-				arr[j] = arr[i];
-				arr[i] = t;
-			}
-		}
+void reverse_array(int arr[], int n){
+	for (int i = 0; i < n/2; i++){
+		int t = arr[i];
+		arr[i] = arr[n-1-i];
+		arr[n-1-i] = t;
 	}
 }
 
@@ -45,15 +40,15 @@ int main(){
 	}
 
 	//int* arr = (int*)calloc(n, sizeof(int));
-	int arr[256] = {0};
+	int arr[256] = { 0 };
 	printf("Scanning for array\n");
 	for (int i = 0; i < n; i++){
 		arr[i] = read_int("Next element: ");
 	}
 
-	randomize_array(arr, n);
+	reverse_array(arr, n);
 
-	printf("Mixed array: ");
+	printf("Reversed array: ");
 	for (int i = 0; i < n; i++){
 		printf("%d ", arr[i]);
 	}

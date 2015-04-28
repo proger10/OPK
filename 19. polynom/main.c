@@ -3,7 +3,6 @@
 #include <stdlib.h> 
 #include <time.h> 
 
-
 void skip_garbage() {
 	int ch;
 	do {
@@ -35,38 +34,36 @@ double read_double(const char * request) {
 	}
 }
 
-double fastpow(double x, int n){
-	if (x == 0){
-		return 0;
-	}
-	if (n < 0){
-		return 1/fastpow(x, -n);
-	}
-	double result = 1.0;
-	while (n != 0){
-		if (n % 2 == 1){
-			result *= x;
-		}
-		x *= x;
-		n /= 2;
+double polynom(double x, double a[], int n)
+{
+	double result = 0;
+	for (int i = n; i >= 0; i--){
+		result = a[i] + result*x;
 	}
 	return result;
 }
 
 int main(){
-	printf("Fast power\n");
-	double x = read_double("Base is ");
-	int n = read_int("Power is ");
-	if ((n <= 0) && (x == 0)){
-		printf("WAT??\n");
+	printf("Value of polynom at x\n");
+	int n = read_int("Polymon power: ");
+	if (n < 0){
+		printf("WAT???\n");
 		return 0;
 	}
 
-	printf("%g^%d=%g\n", x, n, fastpow(x, n));
-
-	for (int i = 0; i < 10; i++) {
-		printf("2^%d: %g\n", i, fastpow(2, i));
+	double arr[256] = { 0 };
+	printf("Scanning for %d coeffs\n", n+1);
+	for (int i = n; i >= 0; i--){
+		arr[i] = read_double("Next coeff: ");
 	}
+
+	for (int i = n; i >= 0; i--){
+		printf("%+g*x^%d", arr[i], i);
+	}
+	printf("\n\n");
+
+	double x = read_double("x = ");
+	printf("Polynom at x=%g is %g\n", x, polynom(x, arr, n));
 
 	return 0;
 }

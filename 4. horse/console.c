@@ -107,7 +107,7 @@ int con_outTxt(const char * format, ...)
 	va_start(arglist, format);
 
 	assert(format);
-	len = _vsnprintf(buffer, sizeof(buffer)-1, format, arglist);
+	len = _vsnprintf(buffer, sizeof(buffer) - 1, format, arglist);
 	assert(len >= 0);
 
 	return _cputs(buffer) == 0 ? len : -1;
@@ -204,7 +204,7 @@ int con_outTxt(const char *format, ...)
 
 	va_start(arglist, format);
 
-	len = vsnprintf(buffer, sizeof(buffer)-1, format, arglist);
+	len = vsnprintf(buffer, sizeof(buffer) - 1, format, arglist);
 	len = (printw(buffer) != ERR) ? len : -1;
 	refresh();
 	return len;

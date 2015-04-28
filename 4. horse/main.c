@@ -79,9 +79,9 @@ void print_horse(point *result){
 	con_setColor(COLOR_BORDER);
 	for (int i = 0; i < (8 + 2)*PIXEL_RATIO_X; i++){
 		for (int j = 0; j < PIXEL_RATIO_Y; j++){
-			con_gotoXY(CORNER_POS_X + i, CORNER_POS_Y+j);
+			con_gotoXY(CORNER_POS_X + i, CORNER_POS_Y + j);
 			con_outTxt("#");
-			con_gotoXY(CORNER_POS_X + i, CORNER_POS_Y + j+9*PIXEL_RATIO_Y);
+			con_gotoXY(CORNER_POS_X + i, CORNER_POS_Y + j + 9 * PIXEL_RATIO_Y);
 			con_outTxt("#");
 		}
 
@@ -101,7 +101,7 @@ void print_horse(point *result){
 		con_setColor(COLOR_HORSE);
 		for (int i = 0; i < PIXEL_RATIO_X; i++){
 			for (int j = 0; j < PIXEL_RATIO_Y; j++){
-				con_gotoXY(CORNER_POS_X + PIXEL_RATIO_X + result[step].x * PIXEL_RATIO_X+i, CORNER_POS_Y + PIXEL_RATIO_Y + result[step].y * PIXEL_RATIO_Y+j);
+				con_gotoXY(CORNER_POS_X + PIXEL_RATIO_X + result[step].x * PIXEL_RATIO_X + i, CORNER_POS_Y + PIXEL_RATIO_Y + result[step].y * PIXEL_RATIO_Y + j);
 				con_outTxt("!");
 			}
 		}
@@ -111,12 +111,12 @@ void print_horse(point *result){
 		con_setColor(COLOR_CHECKED);
 		for (int i = 0; i < PIXEL_RATIO_X; i++){
 			for (int j = 0; j < PIXEL_RATIO_Y; j++){
-				con_gotoXY(CORNER_POS_X + PIXEL_RATIO_X + result[step].x * PIXEL_RATIO_X+i, CORNER_POS_Y + PIXEL_RATIO_Y + result[step].y * PIXEL_RATIO_Y+j);
+				con_gotoXY(CORNER_POS_X + PIXEL_RATIO_X + result[step].x * PIXEL_RATIO_X + i, CORNER_POS_Y + PIXEL_RATIO_Y + result[step].y * PIXEL_RATIO_Y + j);
 				con_outTxt(" ");
 			}
 		}
 	}
-	con_gotoXY(0, CORNER_POS_Y + PIXEL_RATIO_Y *10);
+	con_gotoXY(0, CORNER_POS_Y + PIXEL_RATIO_Y * 10);
 	con_setColor(COLOR_NORMAL);
 	con_deinit();
 }

@@ -14,7 +14,7 @@ long long parse_number(char *str, int base, int *is_ok)
 		return 0;
 	}
 	int lshift = 0;
-	while(isspace(str[lshift]))
+	while (isspace(str[lshift]))
 		lshift++;
 	int sign = 1;
 	if ((str[lshift] == '+') || (str[lshift] == '-')){
@@ -26,14 +26,14 @@ long long parse_number(char *str, int base, int *is_ok)
 		if ((str[i] >= 'A') && (str[i] <= 'Z'))
 			c += -'A' + 'a';
 		if (((c >= '0') && (c <= '9')) || ((c >= 'a') && (c <= 'a' + base - 11))){
-			result = result*base + c - (((c >= '0') && (c <= '9'))?'0':('a'-10));
+			result = result*base + c - (((c >= '0') && (c <= '9')) ? '0' : ('a' - 10));
 		}
 		else
 		{
 			*is_ok = false;
 			return sign*result;
 		}
-		
+
 	}
 	*is_ok = true;
 	return sign*result;
@@ -41,13 +41,13 @@ long long parse_number(char *str, int base, int *is_ok)
 
 void test(){
 	int is_ok = 0;
-	assert((parse_number(_strdup("123"), 10, &is_ok) == 123) && is_ok);
-	assert((parse_number(_strdup("+123"), 10, &is_ok) == 123) && is_ok);
-	assert((parse_number(_strdup("-123"), 10, &is_ok) == -123) && is_ok);
-	assert((parse_number(_strdup("123t"), 10, &is_ok) == 123) && !is_ok);
-	assert((parse_number(_strdup(""), 10, &is_ok) == 0) && is_ok);
-	assert((parse_number(_strdup("az"), 36, &is_ok) == 395) && is_ok);
-	assert((parse_number(_strdup("		 -AbAd1dEa"), 16, &is_ok) == -2880249322LL) && is_ok);
+	assert((parse_number("123", 10, &is_ok) == 123) && is_ok);
+	assert((parse_number("-123", 10, &is_ok) == -123) && is_ok);
+	assert((parse_number("+123", 10, &is_ok) == 123) && is_ok);
+	assert((parse_number("123t", 10, &is_ok) == 123) && !is_ok);
+	assert((parse_number("", 10, &is_ok) == 0) && is_ok);
+	assert((parse_number("az", 36, &is_ok) == 395) && is_ok);
+	assert((parse_number("		 -AbAd1dEa", 16, &is_ok) == -2880249322LL) && is_ok);
 }
 
 int main(){

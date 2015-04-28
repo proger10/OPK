@@ -18,23 +18,23 @@ void strtrim(char *str){
 	if (rrem == 0)
 		return;
 	while (isspace(str[lrem])){
-		if (lrem + 1 < strlen(str)){
+		if (lrem + 1 < rrem){
 			lrem++;
 		}
 		else{
 			break;
 		}
 	}
-	
+
 	while (isspace(str[rrem - 1])){
-		if (rrem -1 >= lrem){
+		if (rrem - 1 >= lrem){
 			rrem--;
 		}
 		else{
 			break;
 		}
 	}
-	
+
 	for (size_t i = lrem; i < rrem; i++){
 		str[i - lrem] = str[i];
 	}
@@ -57,11 +57,7 @@ void test(){
 }
 
 int main(){
+	printf("I do nothing =(\n");
 	test();
-	char str[] = "  \t  gh   \t\n ";
-	printf("%s", str);
-	strtrim(str);
-	printf("\n---\n");
-	printf("%s", str);
-
+	return 0;
 }

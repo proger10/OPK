@@ -1,5 +1,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
+#include <stdbool.h>
+#include <stdlib.h>
 
 int main() {
 	printf("List all prime numbers from 1 to N\n");
@@ -7,18 +9,19 @@ int main() {
 	int n;
 	scanf("%d", &n);
 
-	for (int num = 1; num <= n; num++){
-		char is_prime = 1;
-
-		for (int i = 2; i*i <= num; i++){
-			if (0 == (num % i)){
-				is_prime = 0;
-				break;
+	bool* arr = (bool*)calloc(n+1, sizeof(bool));
+	arr[0] = arr[1] = true;
+	
+	for (int i = 2; i <= n; i++){
+		if (!arr[i]){
+			printf("%d ", i);
+			for (int j = 2 * i; j <= n; j += i){
+				arr[j] = true;
 			}
 		}
-
-		if (is_prime){
-			printf("%d ", num);
-		}
 	}
+
+	free(arr);
+	return 0;
+
 }
