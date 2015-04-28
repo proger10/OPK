@@ -2,6 +2,7 @@
 #define ALV_TREE_H
 
 #include <stdlib.h>
+#include <stdbool.h>
 
 typedef void * Pointer;
 
@@ -9,7 +10,7 @@ typedef int(*CmpFunc)(Pointer data1, Pointer data2);
 
 typedef struct _AVLTreeNode {
 	Pointer data;
-	int balance;
+    int balance;
 	struct _AVLTreeNode *left, *right;
 	struct _AVLTreeNode *parent;
 } AVLTreeNode;
@@ -43,4 +44,7 @@ Pointer avl_delete(AVLTree *tree, Pointer data);
 // Call foreach_func for every node's data in tree passing given extra_data
 void avl_foreach(AVLTree *tree, void(*foreach_func)(Pointer data, Pointer extra_data), Pointer extra_data);
 
+int avl_subtree_height(AVLTreeNode *node);
+
+bool avl_check(AVLTree *tree);
 #endif
