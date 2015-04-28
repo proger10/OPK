@@ -133,23 +133,47 @@ void test_load(){
 		int size = avl_size(tree);
 		assert(size == i + 1 - deleted - replaced);
 
-		/*int del = rand();
-		if (i == 3563)
-		del = del;
+		int del = rand();
 		res = (int *) avl_delete(tree, &del);
 		if (res != NULL){
 		free(res);
 		deleted++;
 		}
-		*/
+		
 		size = avl_size(tree);
-		printf("%d\n", i);
 		assert(size == i + 1 - deleted - replaced);
+		assert(avl_check(tree));
 	}
 	avl_foreach(tree, foreachfree, &freed);
 
 	assert(freed == avl_size(tree));
 	assert(LOAD == replaced + deleted + freed);
+	avl_destroy(tree);
+}
+
+void test_time(FILE *f){
+	AVLTree *tree = avl_create(intcmp);
+	assert(avl_size(tree) == 0);
+	int replaced = 0;
+	int freed = 0;
+	assert(tree != NULL);
+	for (int i = 0; i < LOAD; i++){
+		int *add = (int *)malloc(sizeof(int));
+		*add = rand();
+		int *res = (int *)avl_insert(tree, add);
+
+		if (res != NULL){
+			free(res);
+			replaced++;
+		}
+		int size = avl_size(tree);
+		assert(size == i + 1 - replaced);
+		fprintf(f, "%d\n", avl_subtree_height(tree->root));
+	}
+	avl_foreach(tree, foreachfree, &freed);
+
+	assert(freed == avl_size(tree));
+	assert(LOAD == replaced + freed);
 	avl_destroy(tree);
 }
 
@@ -180,5 +204,8 @@ void test(){
 	test_all();
 	test_reinsert();
 	test_load();
+	//FILE *f = fopen("file.txt", "w");
+	//test_time(f);
+	//fclose(f);
 	_CrtDumpMemoryLeaks();
 }
