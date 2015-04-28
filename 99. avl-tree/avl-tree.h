@@ -47,8 +47,4 @@ void avl_foreach(AVLTree *tree, void(*foreach_func)(Pointer data, Pointer extra_
 int avl_subtree_height(AVLTreeNode *node);
 
 bool avl_check(AVLTree *tree);
-<<<<<<< HEAD
 #endif
-=======
-#endif
->>>>>>> 60a52643b8baeffe840f8cc9cccf4605c34acf3e
