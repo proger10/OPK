@@ -130,7 +130,6 @@ Pointer avl_find(AVLTree *tree, Pointer data){
 	return node->data;
 }
 
-<<<<<<< HEAD
 static int avl_left_right_case_rotation(AVLTreeNode *pivot){
 	int balance_case = pivot->left->right->balance;
 	assert(abs(balance_case) <= 1);
@@ -141,18 +140,6 @@ static int avl_left_right_case_rotation(AVLTreeNode *pivot){
 	AVLTreeNode *subtreeC = pivot->left->right->right;
 	AVLTreeNode *subtreeD = pivot->right;
 
-=======
-static void avl_left_right_case_rotation(AVLTree *tree, AVLTreeNode *pivot){
-	int balance_case = pivot->left->right->balance;
-	assert(abs(balance_case) <= 1);
-
-
-	AVLTreeNode *subtreeA = pivot->left->left;
-	AVLTreeNode *subtreeB = pivot->left->right->left;
-	AVLTreeNode *subtreeC = pivot->left->right->right;
-	AVLTreeNode *subtreeD = pivot->left;
-
->>>>>>> origin/master
 	AVLTreeNode *a_node = pivot;
 	AVLTreeNode *b_node = pivot->left;
 	AVLTreeNode *c_node = pivot->left->right;
@@ -160,11 +147,7 @@ static void avl_left_right_case_rotation(AVLTree *tree, AVLTreeNode *pivot){
 	Pointer a_data = a_node->data;
 	Pointer b_data = b_node->data;
 	Pointer c_data = c_node->data;
-<<<<<<< HEAD
 
-=======
-	
->>>>>>> origin/master
 	//Fix new root (c node)
 	a_node->data = c_data;
 	a_node->left = b_node;
@@ -184,15 +167,11 @@ static void avl_left_right_case_rotation(AVLTree *tree, AVLTreeNode *pivot){
 	c_node->left = subtreeC;
 	c_node->right = subtreeD;
 	c_node->data = a_data;
-<<<<<<< HEAD
 	c_node->parent = a_node;
-=======
->>>>>>> origin/master
 	if (balance_case == 1)
 		c_node->balance = -1;
 	else
 		c_node->balance = 0;
-<<<<<<< HEAD
 
 
 	//fix subtree parents
@@ -470,150 +449,6 @@ static void avl_balance(AVLTreeNode *node, int delta_height, bool left){
 		}
 		node = node->parent;
 	}
-=======
-}
-
-static void avl_right_left_case_rotation(AVLTree *tree, AVLTreeNode *pivot){
-	int balance_case = pivot->right->left->balance;
-	assert(abs(balance_case) <= 1);
-
-
-	AVLTreeNode *subtreeA = pivot->left;
-	AVLTreeNode *subtreeB = pivot->right->left->left;
-	AVLTreeNode *subtreeC = pivot->right->left->right;
-	AVLTreeNode *subtreeD = pivot->right->right;
-
-	AVLTreeNode *a_node = pivot;
-	AVLTreeNode *b_node = pivot->right;
-	AVLTreeNode *c_node = pivot->right->left;
-
-	Pointer a_data = a_node->data;
-	Pointer b_data = b_node->data;
-	Pointer c_data = c_node->data;
-
-	//Fix new root (c node)
-	a_node->data = c_data;
-	a_node->left = c_node;
-	a_node->right = b_node;
-	a_node->balance = 0;
-
-	//Fix b node
-	b_node->left = subtreeC;
-	b_node->right = subtreeD;
-	b_node->parent = a_node;
-	if (balance_case == 1)
-		b_node->balance = -1;
-	else
-		b_node->balance = 0;
-
-	//Fix c node
-	c_node->left = subtreeA;
-	c_node->right = subtreeB;
-	c_node->data = a_data;
-	if (balance_case == -1)
-		c_node->balance = -1;
-	else
-		c_node->balance = 0;
-}
-
-static void avl_left_left_case_rotation(AVLTree *tree, AVLTreeNode *pivot){
-	int balance_case_x = pivot->left->left->balance;
-	int balance_case = pivot->left->balance;
-	assert((balance_case == 1) || (balance_case == 0));
-	assert(abs(balance_case_x) <= 1);
-
-
-	AVLTreeNode *a_node = pivot;
-	AVLTreeNode *b_node = pivot->left;
-	AVLTreeNode *c_node = pivot->left->left;
-
-	AVLTreeNode *subtreeA = c_node->left;
-	AVLTreeNode *subtreeB = c_node->right;
-	AVLTreeNode *subtreeC = b_node->right;
-	AVLTreeNode *subtreeD = a_node->right;
-
-	Pointer a_data = a_node->data;
-	Pointer b_data = b_node->data;
-	Pointer c_data = c_node->data;
-
-	//Fix new root (c node)
-	a_node->data = b_data;
-	a_node->left = b_node;
-	a_node->right = c_node;
-	if (balance_case == 1)
-		a_node->balance = 0;
-	else
-		a_node->balance = -1;
-
-	//Fix b node
-	b_node->data = c_data;
-	b_node->left = subtreeA;
-	b_node->right = subtreeB;
-	b_node->parent = a_node;
-	b_node->balance = balance_case_x;
-
-	//Fix c node
-	c_node->data = a_data;
-	c_node->left = subtreeC;
-	c_node->right = subtreeD;
-	c_node->parent = a_node;
-	if (balance_case == 1)
-		a_node->balance = 0;
-	else
-		a_node->balance = 1;
-}
-
-static void avl_right_right_case_rotation(AVLTree *tree, AVLTreeNode *pivot){
-	int balance_case_x = pivot->left->left->balance;
-	int balance_case = pivot->left->balance;
-	assert((balance_case == 1) || (balance_case == 0));
-	assert(abs(balance_case_x) <= 1);
-
-
-	AVLTreeNode *a_node = pivot;
-	AVLTreeNode *b_node = pivot->left;
-	AVLTreeNode *c_node = pivot->left->left;
-
-	AVLTreeNode *subtreeA = c_node->left;
-	AVLTreeNode *subtreeB = c_node->right;
-	AVLTreeNode *subtreeC = b_node->right;
-	AVLTreeNode *subtreeD = a_node->right;
-
-	Pointer a_data = a_node->data;
-	Pointer b_data = b_node->data;
-	Pointer c_data = c_node->data;
-
-	//Fix new root (c node)
-	a_node->data = b_data;
-	a_node->left = b_node;
-	a_node->right = c_node;
-	if (balance_case == 1)
-		a_node->balance = 0;
-	else
-		a_node->balance = -1;
-
-	//Fix b node
-	b_node->data = c_data;
-	b_node->left = subtreeA;
-	b_node->right = subtreeB;
-	b_node->parent = a_node;
-	b_node->balance = balance_case_x;
-
-	//Fix c node
-	c_node->data = a_data;
-	c_node->left = subtreeC;
-	c_node->right = subtreeD;
-	c_node->parent = a_node;
-	if (balance_case == 1)
-		a_node->balance = 0;
-	else
-		a_node->balance = 1;
-}
-
-static void avl_balance(AVLTree *tree){
-	//todo balance
-	return;
->>>>>>> origin/master
 }
 
 Pointer avl_insert(AVLTree *tree, Pointer data){
@@ -658,17 +493,11 @@ Pointer avl_insert(AVLTree *tree, Pointer data){
 Pointer avl_delete(AVLTree *tree, Pointer data){
 	AVLTreeNode *node = avl_find_node(tree, data);
 	//AVLTreeNode **remfrom = NULL;
-<<<<<<< HEAD
 	if (node == NULL){
 		return NULL;
 	}
 	//definition after block without braces. lol.
 	AVLTreeNode **remfrom = &(tree->root);// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-=======
-	if (node == NULL)
-		return NULL;
-	AVLTreeNode **remfrom = &(tree->root);// ??????????????????????????????????????????????????????
->>>>>>> origin/master
 	//remfrom = &(tree->root);
 	if (node->parent != NULL){
 		if (node->parent->left == node)
@@ -815,8 +644,4 @@ void avl_foreach(AVLTree *tree, void(*foreach_func)(Pointer data, Pointer extra_
 		foreach_func(node->data, extra_data);
 	}
 	queue_destroy(&q);
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> origin/master
