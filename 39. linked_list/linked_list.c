@@ -190,6 +190,14 @@ SList *slist_find_custom(SList *list, Pointer data, int(*compare_func)(Pointer, 
 	return NULL;
 }
 
+SList *slist_find_custom_param(SList *list, Pointer needle, int(*compare_func)(Pointer a, Pointer b, Pointer param), Pointer param){
+	for (SList *i = list; i != NULL; i = i->next){
+		if (compare_func(i->data, needle, param) == 0)
+			return i;
+	}
+	return NULL;
+}
+
 int slist_position(SList *list, SList *el){
 	if (list == NULL)
 		return -1;
