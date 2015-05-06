@@ -7,7 +7,7 @@
 
 typedef void *Pointer;
 typedef unsigned(*HashFunction)(void *key);
-typedef int(*CompareFunction)(void *data, void *compdata);
+typedef int(*CompareFunction)(void *key1, void *key2);
 
 typedef struct _Entry{
 	void *key;
@@ -35,6 +35,7 @@ HashTable *ht_init(size_t size, HashFunction hash, CompareFunction compare);
 
 /* Уничтожить таблицу */
 void ht_destroy(HashTable *ht);
+void ht_free_destroy(HashTable *ht);
 
 /* Записать в таблицу соответствие key -> data. Если key уже существовал,
 * соотв. поле data будет удалено (dtor) и перезаписано */
@@ -47,7 +48,7 @@ Pointer ht_get(HashTable *ht, void *key);
 int ht_has(HashTable *ht, void *key);
 
 /* Удалить элемент с ключом key из таблицы (если он есть) */
-void ht_delete(HashTable *ht, void *key);
+Pointer ht_delete(HashTable *ht, void *key);
 
 /* Обход таблицы с посещением всех элементов. Функция f будет вызвана для
 * всех пар (key, data) из таблицы */
