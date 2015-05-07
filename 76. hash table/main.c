@@ -79,7 +79,7 @@ void test_all(){
 		else
 			assert(res == NULL);
 	}
-	
+
 	//foreach test
 	bool *foreachtest = calloc(SIZE, sizeof(bool));
 	assert(foreachtest != NULL);
@@ -89,7 +89,7 @@ void test_all(){
 		assert(foreachtest[i]);
 	}
 	free(foreachtest);
-	
+
 	//delete test
 	for (int i = 0; i < SIZE; i++){
 		int *res = ht_delete(ht, &i);
@@ -106,44 +106,43 @@ void test_all(){
 	free_data(test);
 }
 
-void foreachfree(void *data, void *freed){
+void foreachfree(void *key, int *data, int *freed){
 	if (data != NULL){
 		free(data);
-		(*((int *)freed))++;
+		(*freed)++;
 	}
 }
 void test_load(){
-	HashTable *tree = avl_create(intcmp);
-	assert(avl_size(tree) == 0);
+	HashTable *ht = ht_init(HASH_SIZE,jenkin_hash,intcmp);
+
 	int replaced = 0;
 	int deleted = 0;
 	int freed = 0;
-	assert(tree != NULL);
+	assert(ht != NULL);
 	for (int i = 0; i < LOAD; i++){
-		int *add = (int *)malloc(sizeof(int));
+		int *add = malloc(sizeof(int));
 		*add = rand();
-		int *res = (int *)avl_insert(tree, add);
+		int *res = ht_set(ht, add, add);
 		if (res != NULL){
 			free(res);
 			replaced++;
 		}
-		int size = avl_size(tree);
+		int size = ht_size(ht);
 		assert(size == i + 1 - deleted - replaced);
 		int del = rand();
-		res = (int *)avl_delete(tree, &del);
+		res = (int *)ht_delete(ht, &del);
 		if (res != NULL){
 			free(res);
 			deleted++;
 		}
-		size = avl_size(tree);
+		size = ht_size(ht);
 		assert(size == i + 1 - deleted - replaced);
-		assert(avl_check(tree));
-		printf("%d\n", i);
+
 	}
-	avl_foreach(tree, foreachfree, &freed);
-	assert(freed == avl_size(tree));
+	ht_foreach(ht, foreachfree, &freed);
+	assert(freed == ht_size(ht));
 	assert(LOAD == replaced + deleted + freed);
-	avl_destroy(tree);
+	ht_destroy(ht);
 }
 
 void test_reinsert(){
