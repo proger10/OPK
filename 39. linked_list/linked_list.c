@@ -75,8 +75,9 @@ SList *slist_remove_all(SList *list, Pointer data){
 Pointer slist_remove_next(SList *sibling){
 	if (sibling == NULL)
 		return NULL;
-	if (sibling->next == NULL)
+	if (sibling->next == NULL){
 		return NULL;
+	}
 	Pointer result = sibling->next->data;
 	SList *next = sibling->next->next;
 	free(sibling->next);
@@ -164,7 +165,7 @@ SList *slist_nth(SList *list, int n){
 		while (n < 0)
 			n += size;
 	}
-	
+
 	SList *i = list;
 	for (int k = 0; k != n; k++, i = i->next){
 		if (i == NULL){
