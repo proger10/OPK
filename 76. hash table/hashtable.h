@@ -45,6 +45,8 @@ Pointer ht_delete(HashTable *ht, void *key);
 * всех пар (key, data) из таблицы */
 void ht_foreach(HashTable *ht, ForeachFunction, Pointer userdata);
 
+int ht_size(HashTable *ht);
+
 /* Изменить размер базового массива.
 *
 * Примерный алгоритм: выделить новый массив table и перенести в него все
