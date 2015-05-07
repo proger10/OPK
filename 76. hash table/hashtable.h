@@ -8,6 +8,7 @@
 typedef void *Pointer;
 typedef unsigned(*HashFunction)(void *key);
 typedef int(*CompareFunction)(void *key1, void *key2);
+typedef void(*ForeachFunction)(void *key, Pointer data, Pointer userdata);
 
 typedef struct _Entry{
 	void *key;
@@ -21,21 +22,11 @@ typedef struct HashTable {
 	CompareFunction compare;
 } HashTable;
 
-/* Инициализировать таблицу.
-*
-* size - размер базового массива;
-* hf   - хеш-функция;
-* dtor - деструктор. Этой функции будут передаваться data удаляемых элементов
-*        (ht_destroy, ht_delete, а также при перезаписи элементов в ht_set).
-*
-* Если hf=0, берется стандартная функция (Дженкинс).
-* Если dtor=0, деструктор отсутствует (не будет вызываться).
-*/
+/* Инициализировать таблицу */
 HashTable *ht_init(size_t size, HashFunction hash, CompareFunction compare);
 
 /* Уничтожить таблицу */
 void ht_destroy(HashTable *ht);
-void ht_free_destroy(HashTable *ht);
 
 /* Записать в таблицу соответствие key -> data. Если key уже существовал,
 * соотв. поле data будет удалено (dtor) и перезаписано */
@@ -52,7 +43,7 @@ Pointer ht_delete(HashTable *ht, void *key);
 
 /* Обход таблицы с посещением всех элементов. Функция f будет вызвана для
 * всех пар (key, data) из таблицы */
-void ht_traverse(HashTable *ht, void(*f)(void *key, Pointer data));
+void ht_foreach(HashTable *ht, ForeachFunction, Pointer userdata);
 
 /* Изменить размер базового массива.
 *
