@@ -129,3 +129,15 @@ void ht_resize(HashTable *ht, size_t new_size){
 	ht->table = new_ht->table;
 	free(new_ht);
 }
+
+static void foreach_size(Entry *entry, int *size){
+	(*size)++;
+}
+
+int ht_size(HashTable *ht){
+	int result = 0;
+	for (size_t i = 0; i < ht->size; i++){
+		slist_foreach(ht->table[i], foreach_size, &result);
+	}
+	return result;
+}
