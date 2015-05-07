@@ -25,6 +25,7 @@ void ht_destroy(HashTable *ht){
 		slist_free(ht->table[i]);
 	}
 	free(ht->table);
+	free(ht);
 }
 
 int compare_key(Entry *a, void *key, CompareFunction compare){
@@ -61,9 +62,6 @@ Pointer ht_set(HashTable *ht, void *key, Pointer data){
 
 Pointer ht_get(HashTable *ht, void *key){
 	unsigned hash = ht->hash(key) % ht->size;
-	if (*(int*)key == 41) {
-		printf("%u\n", hash);
-	}
 
 	Entry *entry = ht_get_low(ht, key, hash);
 	if (entry == NULL)
@@ -81,20 +79,30 @@ Pointer ht_delete(HashTable *ht, void *key){
 	unsigned hash = ht->hash(key) % ht->size;
 
 	Entry *entry = ht_get_low(ht, key, hash);
-	if (entry == NULL)
+	if (entry == NULL){
 		return NULL;
+	}
 	Pointer result = entry->data;
 	ht->table[hash] = slist_remove(ht->table[hash], entry);
+	free(entry);
 	return result;
 }
 
-static void foreach(Entry *entry, void(*f)(void *key, Pointer data)){
-	f(entry->key, entry->data);
+typedef struct _foreach{
+	ForeachFunction f;
+	Pointer userdata;
+} Foreach;
+
+static void foreach(Entry *entry, Foreach *foreach){
+	foreach->f(entry->key, entry->data, foreach->userdata);
 }
 
-void ht_traverse(HashTable *ht, void(*f)(void *key, Pointer data)) {
+void ht_foreach(HashTable *ht, ForeachFunction f, Pointer userdata) {
+	Foreach foreach_data;
+	foreach_data.f = f;
+	foreach_data.userdata = userdata;
 	for (size_t i = 0; i < ht->size; i++){
-		slist_foreach(ht->table[i], foreach, f);
+		slist_foreach(ht->table[i], foreach, &foreach_data);
 	}
 }
 
