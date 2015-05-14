@@ -38,6 +38,17 @@ char *str_get(String *str){
 	return str->str;
 }
 
+
+int str_compare(String *str, char *sample){
+	if ((str == NULL) || (sample == NULL)){
+		return 0;
+	}
+	if (strlen(str->str) == strlen(sample)){
+		return strcmp(str->str, sample) == 0;
+	}
+	return 0;
+}
+
 void str_free(String *str){
 	if (str == NULL)
 		return;
