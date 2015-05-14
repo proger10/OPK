@@ -29,7 +29,7 @@ typedef enum _lex_type{
 	LEX_SHARP,			// #
 	LEX_AMP,			// &
 	LEX_PERC,			// %
-	LEX_SHL,			// << or shl
+	LEX_SHL,			// << or shl ///mod div
 	LEX_SHR,			// >> or shr
 	LEX_INT,
 	LEX_REAL,
@@ -58,7 +58,12 @@ typedef enum _lex_type{
 typedef enum _state{
 	ST_SEP,
 	ST_ERROR,
-	ST_WORD
+	ST_WORD,
+	ST_OP_SEP,
+	ST_COLON,
+	ST_ASSIGN,
+	ST_INT,
+	ST_DOT
 } SM_state;
 
 typedef struct _lex{
