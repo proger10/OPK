@@ -11,6 +11,7 @@ typedef struct _d_str{
 
 String *str_create();
 int str_add(String *str, char a);
+int str_compare(String *str, char *sample);
 char *str_get(String *str);
 void str_free(String *str);
 void str_destroy(String *str);
