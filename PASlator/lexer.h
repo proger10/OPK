@@ -5,12 +5,52 @@
 
 
 typedef enum _lex_type{
-	LEX_WORD,
-	LEX_OP,
-	LEX_LB,
-	LEX_RB,
+	LEX_ID,
+	LEX_PLUS,			// +
+	LEX_MINUS,			// -
+	LEX_MULT,			// *
+	LEX_R_DIV,			// /
+	LEX_EQ,				// =
+	LEX_LESS,			// <
+	LEX_MORE,			// >
+	LEX_SQ_BR_OP,		// [
+	LEX_SQ_BR_CL,		// ]
+	LEX_DOT,			// .
+	LEX_COMMA,			// ,
+	LEX_LB,				// (
+	LEX_RB,				// )
+	LEX_COLON,			// :
+	LEX_OP_SEP,			// ;
+	LEX_PTR,			// ^
+	LEX_SOBAKA,//rename // @
+	LEX_BRACE_OP,		// {
+	LEX_BRACE_CL,		// }
+	LEX_DOLLAR,			// $
+	LEX_SHARP,			// #
+	LEX_AMP,			// &
+	LEX_PERC,			// %
+	LEX_SHL,			// << or shl
+	LEX_SHR,			// >> or shr
 	LEX_INT,
 	LEX_REAL,
+	LEX_NOT_EQ,			// <>
+	LEX_LESS_EQ,		// <=
+	LEX_MORE_EQ,		// >=
+	LEX_ASSIGN,			// :=
+	LEX_COMMENT_OP,		// (*
+	LEX_COMMENT_CL,		// *)
+	LEX_LINE_COMMENT,	// //
+	LEX_PROGRAM,
+	LEX_BEGIN,
+	LEX_END,
+	LEX_IF,
+	LEX_FOR,
+	LEX_THEN,
+	LEX_WHILE,
+	LEX_REPEAT,
+	LEX_UNTIL,
+	LEX_TO,
+	LEX_DO,
 	LEX_UNKNOWN,
 	LEX_NO
 } Lex_type;

@@ -29,7 +29,7 @@ static int is_09(int a){
 }
 
 static int is_space(int a){
-	return (isspace(a) || (a==EOF));
+	return (isspace(a) || (a == EOF));
 }
 
 Lex *lex_next(Lexer *lexer){
@@ -39,61 +39,76 @@ Lex *lex_next(Lexer *lexer){
 	while (!ret) {
 		int c = stream_next(lexer->inp);
 		c = lowercase(c);
-		
+
 		if (c == EOF){
 			ret = 1;
 		}
 
 		switch (lexer->state){
-		//Starting
+			//Starting
 		case ST_SEP:
+			//word case
 			if (is_az(c)){
 				lexer->state = ST_WORD;
+				str_add(str, c);
+				stream_read(lexer->inp);
 				break;
 			}
-			if (is_space(c))
-				lexer->state = ST_SEP;
+			//skip empty chars
+			if (is_space(c)){
+				stream_read(lexer->inp);
+				break;
+			}
+			//operator separator
+			if (c == ';'){
+				ret = 1;//it's a final stage
+
+			}
+			//can't recognize lex. something unknown?
+			lexer->state = ST_ERROR;
+			str_add(str, c);
+			ret = 1;
 			break;
 
-		//Word state
+			//Word state
 		case ST_WORD:
+			//read part of word
 			if (is_az(c) || is_09(c)){
+				str_add(str, c);
+				stream_read(lexer->inp);
 				break;
 			}
-			if (is_space(c))
-				lexer->state = ST_SEP;
+			//read something that can't be interpritated as word
+			ret = 1;
 			break;
 		default:
-			state = ST_ERROR;
-			lex_type = LEX_UNKNOWN;
+			lexer->state = ST_ERROR;
+			ret = 1;
 			break;
-		}
-		if (state != ST_ERROR){
-			str_add(str, c);
-			stream_read(lexer->inp);
 		}
 	}
 
 
 	Lex *result = NULL;
-	if (lex_type != LEX_NO){
+	if (lexer->state != ST_SEP){
 		result = malloc(sizeof(Lex));
 		if (result == NULL)
 			return NULL;
 		else{
-			switch (lex_type){
-			case LEX_WORD:
+			switch (lexer->state){
+			case ST_WORD:
 				result->type = LEX_WORD;
 				result->value = str->str;
-				free(str);//todo
 				break;
 			default:
 				result->type = LEX_UNKNOWN;
-				result->value = NULL;
+				result->value = str->str;
 				break;
 			}
 		}
 	}
+	str_free(str);
+	lexer->state = ST_SEP;
 	return result;
 }
 

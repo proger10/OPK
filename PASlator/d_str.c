@@ -38,6 +38,12 @@ char *str_get(String *str){
 	return str->str;
 }
 
+void str_free(String *str){
+	if (str == NULL)
+		return;
+	free(str);
+}
+
 void str_destroy(String *str){
 	if (str == NULL)
 		return;

@@ -1,4 +1,4 @@
-program vova
+program vova;
 begin
 
 end
