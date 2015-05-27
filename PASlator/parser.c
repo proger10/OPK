@@ -160,6 +160,7 @@ static SList *var_decl(Parser *parser){//TODO or NOTTODO var enumumiration decla
 
 
 		//Should be :
+		//var a: integer;
 		if (lex->type != LEX_COLON){
 			//TODO. Raise error
 		}
@@ -167,6 +168,7 @@ static SList *var_decl(Parser *parser){//TODO or NOTTODO var enumumiration decla
 
 		lex = lex_next(parser->lexer);
 		//should be id
+		
 		if (lex->type != LEX_ID){
 			//TODO. raise error
 		}
@@ -222,13 +224,27 @@ static SList *gram_var(Parser *parser){
 
 //type
 static SList *gram_type(Parser *parser){
-
+	SList *result = NULL; // syntax list
+	Lex *lex = lex_cur(parser->lexer);
+	SList *syn = NULL;
 	return NULL;
 }
 
 //function
 static SList *gram_function(Parser *parser){
-
+	Lex *lex = lex_cur(parser->lexer);
+	if (lex->type == LEX_FUNCTION) {
+		lex_free_lex(lex);
+		lex = lex_next(parser->lexer);
+		if (lex->type != LEX_ID){
+			//TODO raise error. id expected
+		}
+		VarDeclaration *var = malloc(sizeof(VarDeclaration));
+		if (var == NULL){
+			//TODO. raise error. memory allocation.
+		}
+		//argument list or no args
+	}
 	return NULL;
 }
 
@@ -286,17 +302,17 @@ static SList *gram_for(Parser *parser){//TODO me
 		if (lex->type != LEX_ID){
 			//TODO. raise error
 		}
-
 	}
 
 	return result;
 }
 
-static int var_name_compare(VarDeclaration *data, char *needle){\
-	if (strcmp(needle, data->name) == 0){
-		//found
-		return 0;
-	}
+static int var_name_compare(VarDeclaration *data, char *needle){
+	
+		if (strcmp(needle, data->name) == 0){
+			//found
+			return 0;
+		}
 	return 1;
 }
 
@@ -317,7 +333,7 @@ static SList *st(Parser *parser){
 	//write/writeln call. writeln is not function in my realization. too strange argument policy
 	//TODO
 
-	//assignment
+	//assignment and call
 	if (lex->type == LEX_ID){
 		//get var id
 		VarDeclaration *var = NULL;
@@ -325,7 +341,6 @@ static SList *st(Parser *parser){
 		if (var_list != NULL)
 			var = var_list->data;
 	}
-
 
 	//TODO raise error. unknown construction
 	return NULL;
