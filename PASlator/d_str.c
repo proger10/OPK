@@ -43,6 +43,7 @@ int str_compare(String *str, char *sample){
 	if ((str == NULL) || (sample == NULL)){
 		return 0;
 	}
+	//TODO Think about it. Really strange one.
 	if (strlen(str->str) == strlen(sample)){
 		return strcmp(str->str, sample) == 0;
 	}

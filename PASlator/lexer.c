@@ -11,6 +11,7 @@ Lexer *lex_create(Stream *in_stream){
 		return result;
 	result->inp = in_stream;
 	result->state = ST_SEP;
+	result->cur = NULL;
 	return result;
 }
 
@@ -68,6 +69,21 @@ static Lex_type parse_word(String *str){
 	if (str_compare(str, "shr")){
 		return LEX_SHR;
 	}
+	if (str_compare(str, "var")){
+		return LEX_VAR;
+	}
+	if (str_compare(str, "type")){
+		return LEX_TYPE;
+	}
+	if (str_compare(str, "const")){
+		return LEX_CONST;
+	}
+	if (str_compare(str, "procedure")){
+		return LEX_PROCEDURE;
+	}
+	if (str_compare(str, "function")){
+		return LEX_FUNCTION;
+	}
 	return LEX_ID;
 }
 
@@ -85,7 +101,7 @@ Lex *lex_next(Lexer *lexer){
 
 		switch (lexer->state){
 
-		//Starting
+			//Starting
 		case ST_SEP:
 			//word case
 			if (is_az(c)){
@@ -132,7 +148,7 @@ Lex *lex_next(Lexer *lexer){
 			ret = 1;
 			break;
 
-		//Word state
+			//Word state
 		case ST_WORD:
 			//read part of word
 			if (is_az(c) || is_09(c)){
@@ -168,7 +184,7 @@ Lex *lex_next(Lexer *lexer){
 			//read something that can't be interpritated as decimal
 			ret = 1;
 			break;
-			
+
 		default:
 			lexer->state = ST_ERROR;
 			ret = 1;
@@ -222,13 +238,28 @@ Lex *lex_next(Lexer *lexer){
 	}
 	str_free(str);
 	lexer->state = ST_SEP;
+	lexer->cur = result;
 	return result;
 }
 
-void lex_free(Lex *lex){
+Lex *lex_cur(Lexer *lexer){
+	if (lexer->cur == NULL)
+		lex_next(lexer);
+
+	return lexer->cur;
+	
+}
+
+void lex_free_lex(Lex *lex){
 	if (lex == NULL)
 		return;
 	free(lex->value);
+	free(lex);
+}
+
+void lex_destroy_lex(Lex *lex){
+	if (lex == NULL)
+		return;
 	free(lex);
 }
 

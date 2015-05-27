@@ -44,11 +44,16 @@ typedef enum _lex_type{
 	LEX_BEGIN,
 	LEX_END,
 	LEX_IF,
+	LEX_VAR,
+	LEX_TYPE,
+	LEX_CONST,
 	LEX_FOR,
 	LEX_THEN,
 	LEX_WHILE,
 	LEX_REPEAT,
 	LEX_UNTIL,
+	LEX_PROCEDURE,
+	LEX_FUNCTION,
 	LEX_TO,
 	LEX_DO,
 	LEX_UNKNOWN,
@@ -74,6 +79,7 @@ typedef struct _lex{
 typedef struct _lexer{
 	Stream *inp;
 	SM_state state;
+	Lex *cur;
 }Lexer;
 
 /*Create lexer from stream*/
@@ -82,8 +88,14 @@ Lexer *lex_create(Stream *in_stream);
 /*Get next lex or NULL on failure*/
 Lex *lex_next(Lexer *lexer);
 
+/*Get cur lex or NULL on failure*/
+Lex *lex_cur(Lexer *lexer);
+
 /*Free memmory for lex*/
-void lex_free(Lex *lex);
+void lex_free_lex(Lex *lex);
+
+/*Free memmory for lex, but lex string data*/
+void lex_destroy_lex(Lex *lex);
 
 /*Destroy lexer*/
 void lex_destroy(Lexer *lexer);

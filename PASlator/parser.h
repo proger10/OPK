@@ -2,13 +2,25 @@
 #define PARSER_H
 
 #include "lexer.h"
+#include "linked_list.h"
 
 typedef struct _parser{
 	Lexer *lexer;
+	SList *defined_vars;
+	//Consts? lol @ in vars @ and fucntions in vars @ and procedures in vars @ ALL IN VARS
+	//WHY @ because you can declare function/var/const named  same as some type @
+	//and cant declare function/var/const with same name as previous function/var/const
+	//except function with defferent arguments. it can be named same.
+	SList *defined_types;
+	int decl_level;
+	int type_num;
+	int var_num;
 } Parser;
 
+
 Parser *parser_create(Lexer *lexer);
-void parser_process(Parser *parser);
+SList *parser_tree(Parser *parser);
+void parser_tree_destroy(SList *tree);
 void parser_destroy(Parser *parser);
 
 #endif

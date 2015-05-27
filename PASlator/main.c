@@ -7,7 +7,6 @@
 #include "parser.h"
 #include <stdio.h>
 
-
 int main(int argc, char **argv){
 	if (argc == 2){
 		FILE *f = fopen(argv[1], "r");
@@ -15,7 +14,9 @@ int main(int argc, char **argv){
 		Lexer *lexer = lex_create(stream);
 		Parser *parser = parser_create(lexer);
 
-		parser_process(parser);
+		SList *tree = parser_tree(parser);
+
+		parser_tree_destroy(tree);
 
 		parser_destroy(parser);
 		lex_destroy(lexer);
