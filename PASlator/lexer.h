@@ -9,53 +9,48 @@ typedef enum _lex_type{
 	LEX_PLUS,			// +
 	LEX_MINUS,			// -
 	LEX_MULT,			// *
-	LEX_R_DIV,			// /
 	LEX_EQ,				// =
 	LEX_LESS,			// <
 	LEX_MORE,			// >
-	LEX_SQ_BR_OP,		// [
-	LEX_SQ_BR_CL,		// ]
 	LEX_DOT,			// .
 	LEX_COMMA,			// ,
 	LEX_LB,				// (
 	LEX_RB,				// )
 	LEX_COLON,			// :
 	LEX_OP_SEP,			// ;
-	LEX_PTR,			// ^
-	LEX_SOBAKA,//rename // @
-	LEX_BRACE_OP,		// {
-	LEX_BRACE_CL,		// }
-	LEX_DOLLAR,			// $
-	LEX_SHARP,			// #
-	LEX_AMP,			// &
-	LEX_PERC,			// %
-	LEX_SHL,			// << or shl ///mod div
+	LEX_SHL,			// << or shl
 	LEX_SHR,			// >> or shr
 	LEX_INT,
-	LEX_REAL,
 	LEX_NOT_EQ,			// <>
 	LEX_LESS_EQ,		// <=
 	LEX_MORE_EQ,		// >=
 	LEX_ASSIGN,			// :=
-	LEX_COMMENT_OP,		// (*
-	LEX_COMMENT_CL,		// *)
-	LEX_LINE_COMMENT,	// //
-	LEX_PROGRAM,
 	LEX_BEGIN,
 	LEX_END,
 	LEX_IF,
+	LEX_NOT,
+	LEX_DIV,
+	LEX_MOD,
+	LEX_AND,
+	LEX_XOR,
+	LEX_OR,
 	LEX_VAR,
-	LEX_TYPE,
 	LEX_CONST,
 	LEX_FOR,
+	LEX_TRUE,
+	LEX_FALSE,
 	LEX_THEN,
+	LEX_ELSE,
 	LEX_WHILE,
 	LEX_REPEAT,
 	LEX_UNTIL,
 	LEX_PROCEDURE,
 	LEX_FUNCTION,
 	LEX_TO,
+	LEX_DOWNTO,
+	LEX_USES,
 	LEX_DO,
+	LEX_CHAR,
 	LEX_UNKNOWN,
 	LEX_NO
 } Lex_type;
@@ -68,6 +63,21 @@ typedef enum _state{
 	ST_COLON,
 	ST_ASSIGN,
 	ST_INT,
+	ST_LB,
+	ST_RB,
+	ST_PLUS,
+	ST_MINUS,
+	ST_MULT,
+	ST_EQ,
+	ST_COMMA,
+	ST_LESS,
+	ST_MORE,
+	ST_CHAR,
+	ST_NOT_EQ,
+	ST_LESS_EQ,
+	ST_SHL,
+	ST_SHR,
+	ST_MORE_EQ,
 	ST_DOT
 } SM_state;
 

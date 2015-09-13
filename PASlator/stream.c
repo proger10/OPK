@@ -1,10 +1,10 @@
 #include "stream.h"
 #include <stdio.h>
 #include <stdlib.h>
-
+#include "error_proc.h"
 
 Stream *stream_create(Source src_type, void *source){
-	Stream *result = malloc(sizeof(Stream));
+	Stream *result = smalloc(sizeof(Stream));
 	if (result == NULL)
 		return NULL;
 	result->pointer = 0;

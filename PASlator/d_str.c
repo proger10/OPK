@@ -2,10 +2,10 @@
 #include <string.h>
 #include <stdlib.h>
 #include <assert.h>
-
+#include "error_proc.h"
 
 String *str_create(){
-	String *result = malloc(sizeof(String));
+	String *result = smalloc(sizeof(String));
 	if (result == NULL)
 		return NULL;
 	result->data_size = 0;
@@ -14,19 +14,21 @@ String *str_create(){
 	return result;
 }
 
-int str_add(String *str, char a){
+int str_add(String *str, int a){
+	if ((a > 255) || (a < 0)){
+		error_custom("Fail while reading sources");
+		return 0;
+	}
 	if (str == NULL)
 		return 0;
 	if (str->size <= str->data_size + 1){
-		char *realloc_str = realloc(str->str, str->data_size + 10);
-		if (realloc_str == NULL)
-			return 0;
+		char *realloc_str = srealloc(str->str, str->data_size + 10);
 		realloc_str[str->data_size] = '\0';
 		str->size += 10;
 		str->str = realloc_str;
 	}
 	assert(str->str[str->data_size] == '\0');
-	str->str[str->data_size] = a;
+	str->str[str->data_size] = (char) a;
 	str->str[str->data_size + 1] = '\0';
 	str->data_size++;
 	return 1;
@@ -38,6 +40,11 @@ char *str_get(String *str){
 	return str->str;
 }
 
+size_t str_size(String *str){
+	if (str == NULL)
+		return 0;
+	return strlen(str->str);
+}
 
 int str_compare(String *str, char *sample){
 	if ((str == NULL) || (sample == NULL)){

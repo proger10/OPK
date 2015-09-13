@@ -3,6 +3,7 @@
 
 #include "lexer.h"
 #include "linked_list.h"
+#include <stdbool.h>
 
 typedef struct _parser{
 	Lexer *lexer;
@@ -11,10 +12,8 @@ typedef struct _parser{
 	//WHY @ because you can declare function/var/const named  same as some type @
 	//and cant declare function/var/const with same name as previous function/var/const
 	//except function with defferent arguments. it can be named same.
-	SList *defined_types;
 	int decl_level;
-	int type_num;
-	int var_num;
+	bool flag;
 } Parser;
 
 

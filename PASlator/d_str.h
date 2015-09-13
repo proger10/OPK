@@ -10,9 +10,10 @@ typedef struct _d_str{
 } String;
 
 String *str_create();
-int str_add(String *str, char a);
+int str_add(String *str, int a);
 int str_compare(String *str, char *sample);
 char *str_get(String *str);
+size_t str_size(String *str);
 void str_free(String *str);
 void str_destroy(String *str);
 
